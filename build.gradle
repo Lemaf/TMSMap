@@ -1,1 +1,29 @@
 apply plugin: 'java'
+
+repositories {
+
+    maven {
+        name "osgeo"
+        url "http://download.osgeo.org/webdav/geotools/"
+    }
+
+    maven {
+        name "boundless"
+        url "http://repo.boundlessgeo.com/main"
+    }
+
+    maven {
+        name "Java.net repository"
+        url "http://download.java.net/maven/2"
+    }
+
+    mavenCentral()
+}
+
+
+dependencies {
+
+    def GeoToolsVersion = "13.3"
+
+    compile "org.geotools:gt-render:$GeoToolsVersion"
+}
