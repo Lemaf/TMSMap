@@ -109,6 +109,7 @@ public class TMSLayer implements Layer {
 
 			double xscale = viewport.getScreenArea().getWidth() / (x2 - x1),
 					  yscale = viewport.getScreenArea().getHeight() / (y2 - y1);
+
 			scaleTransform.scale(xscale, yscale);
 
 			URL url;
@@ -119,12 +120,11 @@ public class TMSLayer implements Layer {
 
 			for (Tile tile : tileRange) {
 
-				x1 = (int) (tileWidth * (tile.x - tileRange.minX) * xscale);
-				y1 = (int) (tileHeight * (tile.y - tileRange.minY) * yscale);
+				x1 = tileWidth * (tile.x - tileRange.minX);
+				y1 = tileHeight * (tile.y - tileRange.minY);
 
-				transform = new AffineTransform();
-				transform.translate(x1 * 2, y1 * 2);
-				transform.concatenate(scaleTransform);
+				transform = new AffineTransform(scaleTransform);
+				transform.translate(x1, y1);
 
 				try {
 					url = urlOf(tile);
@@ -153,7 +153,6 @@ public class TMSLayer implements Layer {
 					x2 = ((int) (tileWidth * normalize(eastTile - tile.x)));
 					y2 = ((int) (tileHeight * normalize(southTile - tile.y)));
 
-
 					try {
 						image = image.getSubimage(x1, y1, x2 - x1, y2 - y1);
 					} catch (Throwable cause) {
@@ -171,9 +170,9 @@ public class TMSLayer implements Layer {
 		}
 
 		private double normalize(double value) {
-			if (value < 0)
+			if (value < 0D)
 				return 0D;
-			else if (value > 1)
+			else if (value > 1D)
 				return 1D;
 			else
 				return value;
