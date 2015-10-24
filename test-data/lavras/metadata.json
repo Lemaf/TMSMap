@@ -1,0 +1,12 @@
+{
+  "name": "zout",
+  "version": "1.0.0",
+  "description": "",
+  "type": "overlay",
+  "format": "png",
+  "minzoom": "8",
+  "maxzoom": "12",
+  "bounds": "-45.65177123,-21.66035188,-44.57767609,-20.80765383",
+  "scale": "1",
+  "profile": "mercator"
+}

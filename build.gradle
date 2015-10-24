@@ -26,4 +26,9 @@ dependencies {
     def GeoToolsVersion = "13.3"
 
     compile "org.geotools:gt-render:$GeoToolsVersion"
+    testCompile 'org.testng:testng:6.9.8'
+}
+
+test {
+    useTestNG()
 }
