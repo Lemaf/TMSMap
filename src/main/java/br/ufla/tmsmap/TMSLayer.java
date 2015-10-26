@@ -4,6 +4,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.DirectLayer;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
+import org.opengis.geometry.DirectPosition;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -51,8 +52,8 @@ public class TMSLayer implements Layer {
 	}
 
 	@Override
-	public DirectLayer toMapLayer(Viewport viewport) {
-		return new TMSDirectLayer(viewport);
+	public DirectLayer toMapLayer(MapViewport viewport, int zoom) {
+		return new TMSDirectLayer(viewport, zoom);
 	}
 
 	private URL urlOf(Tile tile) throws MalformedURLException {
@@ -64,37 +65,60 @@ public class TMSLayer implements Layer {
 	}
 
 	public class TMSDirectLayer extends DirectLayer {
-		private final Viewport viewport;
+		private final int zoom;
+		private final MapViewport viewport;
 
-		public TMSDirectLayer(Viewport viewport) {
+		public TMSDirectLayer(MapViewport viewport, int zoom) {
 			this.viewport = viewport;
-		}
-
-		private double calculateDx(MapViewport viewport, double screenAspectRatio) {
-			return ((screenAspectRatio * viewport.getBounds().getHeight()) - viewport.getBounds().getWidth()) / 2D;
-		}
-
-		private double calculateDy(MapViewport viewport, double screenAspectRatio) {
-			return ((viewport.getBounds().getWidth() / screenAspectRatio) - viewport.getBounds().getHeight()) / 2D;
+			this.zoom = zoom;
 		}
 
 		@Override
 		public void draw(Graphics2D graphics, MapContent map, MapViewport viewport) {
 
-			TileRange tileRange = new TileRange(viewport.getBounds(), this.viewport.getZoom());
-
 			int x1, y1, x2, y2;
 
-			x1 = (int) (tileWidth * (SlippyUtil.lngToTileDouble(tileRange.lowerCorner.getOrdinate(0), this.viewport.getZoom()) - tileRange.minX));
-			x2 = (int) (tileWidth * (SlippyUtil.lngToTileDouble(tileRange.upperCorner.getOrdinate(0), this.viewport.getZoom()) - tileRange.minX));
+			DirectPosition lowerCorner = viewport.getBounds().getLowerCorner(),
+					  upperCorner = viewport.getBounds().getUpperCorner();
 
-			y1 = (int) (tileHeight * (SlippyUtil.latToTileDouble(tileRange.upperCorner.getOrdinate(1), this.viewport.getZoom()) - tileRange.minY));
-			y2 = (int) (tileHeight * (SlippyUtil.latToTileDouble(tileRange.lowerCorner.getOrdinate(1), this.viewport.getZoom()) - tileRange.minY));
+			x1 = (int) (tileWidth * (SlippyUtil.lngToTileDouble(lowerCorner.getOrdinate(0), zoom)));
+			x2 = (int) (tileWidth * (SlippyUtil.lngToTileDouble(upperCorner.getOrdinate(0), zoom)));
+
+			y1 = (int) (tileHeight * (SlippyUtil.latToTileDouble(upperCorner.getOrdinate(1), zoom)));
+			y2 = (int) (tileHeight * (SlippyUtil.latToTileDouble(lowerCorner.getOrdinate(1), zoom)));
+
+			int width = x2 - x1, height = y2 - y1;
+
+			double screenAspectRatio = viewport.getScreenArea().getWidth() / viewport.getScreenArea().getHeight(),
+			mapAspectRatio = ((double)width) / height;
+
+			if (screenAspectRatio >= mapAspectRatio) {
+				double dx = (height * screenAspectRatio - width) / 2D;
+				x1 -= dx;
+				x2 += dx;
+			} else {
+				double dy = ((width / screenAspectRatio) - height) / 2D;
+				y1 -= dy;
+				y2 += dy;
+			}
+
+			width = x2 - x1;
+			height = y2 - y1;
+
+			double lng1 = SlippyUtil.pixelToLng(x1, zoom, tileWidth),
+			lng2 = SlippyUtil.pixelToLng(x2, zoom, tileWidth),
+			lat1 = SlippyUtil.pixelToLat(y1, zoom, tileHeight),
+			lat2 = SlippyUtil.pixelToLat(y2, zoom, tileHeight);
+
+			ReferencedEnvelope envelope = new ReferencedEnvelope(lng1, lng2, lat2, lat1, viewport.getBounds().getCoordinateReferenceSystem());
+
+			TileRange tileRange = new TileRange(envelope, zoom);
+
 
 			AffineTransform scaleTransform = new AffineTransform(), transform;
 
-			double xscale = viewport.getScreenArea().getWidth() / (x2 - x1),
-					  yscale = viewport.getScreenArea().getHeight() / (y2 - y1);
+			double xscale = viewport.getScreenArea().getWidth() / width,
+					  yscale = viewport.getScreenArea().getHeight() / height;
 
 			scaleTransform.scale(xscale, yscale);
 
@@ -104,9 +128,9 @@ public class TMSLayer implements Layer {
 
 			double northtTile, southTile, westTile, eastTile;
 
-			northtTile = SlippyUtil.latToTileDouble(tileRange.upperCorner.getOrdinate(1), this.viewport.getZoom());
+			northtTile = SlippyUtil.latToTileDouble(tileRange.upperCorner.getOrdinate(1), zoom);
 			//southTile = SlippyUtil.latToTileDouble(tileRange.lowerCorner.getOrdinate(1), this.viewport.getZoom());
-			westTile = SlippyUtil.lngToTileDouble(tileRange.lowerCorner.getOrdinate(0), this.viewport.getZoom());
+			westTile = SlippyUtil.lngToTileDouble(tileRange.lowerCorner.getOrdinate(0), zoom);
 			//eastTile = SlippyUtil.lngToTileDouble(tileRange.upperCorner.getOrdinate(0), this.viewport.getZoom());
 
 			AffineTransform scaleAndTranslateTransform = new AffineTransform(scaleTransform);
@@ -161,7 +185,7 @@ public class TMSLayer implements Layer {
 
 		@Override
 		public ReferencedEnvelope getBounds() {
-			return viewport.getEnvelope();
+			return viewport.getBounds();
 		}
 
 		private double normalize(double value) {

@@ -61,7 +61,7 @@ public class TileRange implements Iterable<Tile> {
 
 				if (x < maxX) {
 					x++;
-				} else if (x == maxX) {
+				} else {
 					x = minX;
 					y++;
 				}

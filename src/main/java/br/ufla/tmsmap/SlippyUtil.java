@@ -66,4 +66,20 @@ public class SlippyUtil {
 
 		return tile;
 	}
+
+	public static double pixelToLng(int x, int zoom, int tileWidth) {
+		final int t = x / tileWidth;
+		double lng1 = tileTolng(t, zoom);
+		double lng2 = tileTolng(t + 1, zoom);
+
+		return lng1 +  ((x % tileWidth) * (lng2 - lng1)) / tileWidth;
+	}
+
+	public static double pixelToLat(int y, int zoom, int tileHeight) {
+		final int t = y / tileHeight;
+		double lat1 = tileTolat(t + 1, zoom);
+		double lat2 = tileTolat(t,zoom);
+
+		return lat1 + ((y % tileHeight) * (lat2 - lat1)) / tileHeight;
+	}
 }

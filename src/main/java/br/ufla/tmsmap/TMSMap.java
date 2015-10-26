@@ -20,15 +20,25 @@ public class TMSMap {
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
 	private final List<Layer> layers = new LinkedList<>();
-		private Viewport viewport;
+	private Viewport viewport;
 
 	public TMSMap addLayer(Layer layer) {
 		layers.add(layer);
 		return this;
 	}
 
-	public Viewport getViewport() {
-		return viewport;
+	private MapContent newMapContent(int width, int height) {
+		MapContent mapContent = new MapContent();
+
+		MapViewport mapViewport = new MapViewport(viewport.getEnvelope(), true);
+		mapViewport.setScreenArea(new Rectangle(width, height));
+
+		for (Layer layer : layers)
+			mapContent.addLayer(layer.toMapLayer(mapViewport, viewport.getZoom()));
+
+		mapContent.setViewport(mapViewport);
+
+		return mapContent;
 	}
 
 	public void render(int width, int height, File file) throws IOException {
@@ -56,23 +66,6 @@ public class TMSMap {
 		mapContent.getMaxBounds();
 
 		return;
-	}
-
-	private MapContent newMapContent(int width, int height) {
-		MapContent mapContent = new MapContent();
-
-		for (Layer layer : layers)
-			mapContent.addLayer(layer.toMapLayer(getViewport()));
-
-		MapViewport mapViewport = viewport.getMapViewport();
-
-		mapViewport.setMatchingAspectRatio(true);
-
-		mapViewport.setScreenArea(new Rectangle(width, height));
-
-		mapContent.setViewport(mapViewport);
-
-		return mapContent;
 	}
 
 	public void setViewport(Viewport viewport) {

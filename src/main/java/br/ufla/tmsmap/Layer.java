@@ -1,8 +1,10 @@
 package br.ufla.tmsmap;
 
+import org.geotools.map.MapViewport;
+
 /**
  * Created by rthoth on 21/10/15.
  */
 public interface Layer {
-	org.geotools.map.Layer toMapLayer(Viewport viewport);
+	org.geotools.map.Layer toMapLayer(MapViewport viewport, int zoom);
 }
