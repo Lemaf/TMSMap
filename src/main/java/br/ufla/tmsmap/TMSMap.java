@@ -66,6 +66,8 @@ public class TMSMap {
 
 		MapViewport mapViewport = viewport.getMapViewport();
 
+		mapViewport.setMatchingAspectRatio(true);
+
 		mapViewport.setScreenArea(new Rectangle(width, height));
 
 		mapContent.setViewport(mapViewport);

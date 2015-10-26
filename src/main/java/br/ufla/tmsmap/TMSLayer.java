@@ -81,21 +81,7 @@ public class TMSLayer implements Layer {
 		@Override
 		public void draw(Graphics2D graphics, MapContent map, MapViewport viewport) {
 
-			double screenAspectRatio = viewport.getScreenArea().getWidth() / viewport.getScreenArea().getHeight();
-			double worldAspectRatio = viewport.getBounds().getWidth() / viewport.getBounds().getHeight();
-
-			double dx = 0, dy = 0;
-
-			if (screenAspectRatio >= worldAspectRatio) {
-				dx = calculateDx(viewport, screenAspectRatio);
-			} else {
-				dy = calculateDy(viewport, screenAspectRatio);
-			}
-
-			ReferencedEnvelope renderBounds = new ReferencedEnvelope(viewport.getBounds());
-			renderBounds.expandBy(dx, dy);
-
-			TileRange tileRange = new TileRange(renderBounds, this.viewport.getZoom());
+			TileRange tileRange = new TileRange(viewport.getBounds(), this.viewport.getZoom());
 
 			int x1, y1, x2, y2;
 
@@ -118,12 +104,25 @@ public class TMSLayer implements Layer {
 
 			double northtTile, southTile, westTile, eastTile;
 
+			northtTile = SlippyUtil.latToTileDouble(tileRange.upperCorner.getOrdinate(1), this.viewport.getZoom());
+			//southTile = SlippyUtil.latToTileDouble(tileRange.lowerCorner.getOrdinate(1), this.viewport.getZoom());
+			westTile = SlippyUtil.lngToTileDouble(tileRange.lowerCorner.getOrdinate(0), this.viewport.getZoom());
+			//eastTile = SlippyUtil.lngToTileDouble(tileRange.upperCorner.getOrdinate(0), this.viewport.getZoom());
+
+			AffineTransform scaleAndTranslateTransform = new AffineTransform(scaleTransform);
+
+			x1 = (int) (tileWidth * (westTile - tileRange.minX));
+			y1 = (int) (tileHeight * (northtTile - tileRange.minY));
+
+			scaleAndTranslateTransform.translate(-x1, -y1);
+
 			for (Tile tile : tileRange) {
+
+				transform = new AffineTransform(scaleAndTranslateTransform);
 
 				x1 = tileWidth * (tile.x - tileRange.minX);
 				y1 = tileHeight * (tile.y - tileRange.minY);
 
-				transform = new AffineTransform(scaleTransform);
 				transform.translate(x1, y1);
 
 				try {
@@ -138,27 +137,23 @@ public class TMSLayer implements Layer {
 					throw new TMSLayerException(this, tile, e);
 				}
 
-				view = tile.view(this.viewport);
-
-				if (!view.within) {
-
-					northtTile = SlippyUtil.latToTileDouble(tileRange.upperCorner.getOrdinate(1), this.viewport.getZoom());
-					southTile = SlippyUtil.latToTileDouble(tileRange.lowerCorner.getOrdinate(1), this.viewport.getZoom());
-					westTile = SlippyUtil.lngToTileDouble(tileRange.lowerCorner.getOrdinate(0), this.viewport.getZoom());
-					eastTile = SlippyUtil.lngToTileDouble(tileRange.upperCorner.getOrdinate(0), this.viewport.getZoom());
-
-					x1 = (int) (tileWidth * normalize(westTile - tile.x));
-					y1 = (int) (tileHeight * normalize(northtTile - tile.y));
-
-					x2 = ((int) (tileWidth * normalize(eastTile - tile.x)));
-					y2 = ((int) (tileHeight * normalize(southTile - tile.y)));
-
-					try {
-						image = image.getSubimage(x1, y1, x2 - x1, y2 - y1);
-					} catch (Throwable cause) {
-						throw new TMSLayerException(this, tile, cause);
-					}
-				}
+//				view = tile.view(this.viewport);
+//
+//				if (!view.within) {
+//
+//					x1 = (int) (tileWidth * normalize(westTile - tile.x));
+//					y1 = (int) (tileHeight * normalize(northtTile - tile.y));
+//
+//					x2 = ((int) (tileWidth * normalize(eastTile - tile.x)));
+//					y2 = ((int) (tileHeight * normalize(southTile - tile.y)));
+//
+//					try {
+//						//image = image.getSubimage(x1, y1, x2 - x1, y2 - y1);
+//					} catch (Throwable cause) {
+//						throw new TMSLayerException(this, tile, cause);
+//					}
+//
+//				}
 
 				graphics.drawImage(image, transform, null);
 			}

@@ -23,7 +23,7 @@ public class TMSMapTest {
 		tmsMap.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png")));
 		tmsMap.setViewport(Viewport.of(new ReferencedEnvelope(-45.50, -44.85, -21.3, -20.9, DefaultGeographicCRS.WGS84), 12));
 		final File outFile = File.createTempFile("TMSMAP", ".png");
-		tmsMap.render(5000, 4000, outFile);
+		tmsMap.render(5000, 2500, outFile);
 	}
 
 }

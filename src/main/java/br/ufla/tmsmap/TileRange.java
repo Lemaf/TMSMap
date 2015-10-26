@@ -21,10 +21,6 @@ public class TileRange implements Iterable<Tile> {
 	public final int maxY;
 	public final int minY;
 
-	public TileRange(Viewport viewport) {
-		this(viewport.getEnvelope(), viewport.getZoom());
-	}
-
 	public TileRange(ReferencedEnvelope envelope, int zoom) {
 		lowerCorner = envelope.getLowerCorner();
 		upperCorner = envelope.getUpperCorner();
