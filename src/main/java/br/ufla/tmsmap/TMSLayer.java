@@ -120,11 +120,10 @@ public class TMSLayer implements Layer {
 			double xscale = viewport.getScreenArea().getWidth() / width,
 					  yscale = viewport.getScreenArea().getHeight() / height;
 
-			scaleTransform.scale(xscale, yscale);
+			//scaleTransform.scale(xscale, yscale);
 
 			URL url;
 			BufferedImage image;
-			Tile.TileView view;
 
 			double northtTile, southTile, westTile, eastTile;
 
@@ -160,24 +159,6 @@ public class TMSLayer implements Layer {
 				} catch (IOException e) {
 					throw new TMSLayerException(this, tile, e);
 				}
-
-//				view = tile.view(this.viewport);
-//
-//				if (!view.within) {
-//
-//					x1 = (int) (tileWidth * normalize(westTile - tile.x));
-//					y1 = (int) (tileHeight * normalize(northtTile - tile.y));
-//
-//					x2 = ((int) (tileWidth * normalize(eastTile - tile.x)));
-//					y2 = ((int) (tileHeight * normalize(southTile - tile.y)));
-//
-//					try {
-//						//image = image.getSubimage(x1, y1, x2 - x1, y2 - y1);
-//					} catch (Throwable cause) {
-//						throw new TMSLayerException(this, tile, cause);
-//					}
-//
-//				}
 
 				graphics.drawImage(image, transform, null);
 			}

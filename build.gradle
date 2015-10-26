@@ -26,6 +26,7 @@ dependencies {
     def GeoToolsVersion = "13.3"
 
     compile "org.geotools:gt-render:$GeoToolsVersion"
+    compile "org.geotools:gt-shapefile:$GeoToolsVersion"
     testCompile 'org.testng:testng:6.9.8'
 }
 
