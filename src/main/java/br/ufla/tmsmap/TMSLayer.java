@@ -89,38 +89,14 @@ public class TMSLayer implements Layer {
 
 			int width = x2 - x1, height = y2 - y1;
 
-			double screenAspectRatio = viewport.getScreenArea().getWidth() / viewport.getScreenArea().getHeight(),
-			mapAspectRatio = ((double)width) / height;
-
-			if (screenAspectRatio >= mapAspectRatio) {
-				double dx = (height * screenAspectRatio - width) / 2D;
-				x1 -= dx;
-				x2 += dx;
-			} else {
-				double dy = ((width / screenAspectRatio) - height) / 2D;
-				y1 -= dy;
-				y2 += dy;
-			}
-
-			width = x2 - x1;
-			height = y2 - y1;
-
-			double lng1 = SlippyUtil.pixelToLng(x1, zoom, tileWidth),
-			lng2 = SlippyUtil.pixelToLng(x2, zoom, tileWidth),
-			lat1 = SlippyUtil.pixelToLat(y1, zoom, tileHeight),
-			lat2 = SlippyUtil.pixelToLat(y2, zoom, tileHeight);
-
-			ReferencedEnvelope envelope = new ReferencedEnvelope(lng1, lng2, lat2, lat1, viewport.getBounds().getCoordinateReferenceSystem());
-
-			TileRange tileRange = new TileRange(envelope, zoom);
-
+			TileRange tileRange = new TileRange(viewport.getBounds(), zoom);
 
 			AffineTransform scaleTransform = new AffineTransform(), transform;
 
 			double xscale = viewport.getScreenArea().getWidth() / width,
 					  yscale = viewport.getScreenArea().getHeight() / height;
 
-			//scaleTransform.scale(xscale, yscale);
+			scaleTransform.scale(xscale, yscale);
 
 			URL url;
 			BufferedImage image;

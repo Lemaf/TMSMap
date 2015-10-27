@@ -20,26 +20,30 @@ public class TMSMapTest {
 		TMSMap tmsMap = new TMSMap();
 
 		tmsMap.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png")));
-		tmsMap.setViewport(Viewport.of(new ReferencedEnvelope(-45.50, -44.85, -21.3, -20.9, DefaultGeographicCRS.WGS84), 12));
+		tmsMap.setViewport(Viewport.of(new ReferencedEnvelope(-45.1, -44.9, -21.2, -21.0, DefaultGeographicCRS.WGS84), 12));
 
-
-		PolygonStyle polygonStyle = new PolygonStyle().fillColor(new Color(0xff, 0xff, 0xff));
-		polygonStyle.color(new Color(0x00, 0xff, 0xff, 0xa0));
-		polygonStyle.opacity(0.9f);
-		polygonStyle.fillColor(new Color(0x00, 0x00, 0xff));
-		polygonStyle.fillOpacity(0.5f);
-		polygonStyle.width(5);
 
 		LineStringStyle lineStyle = new LineStringStyle();
-		lineStyle.color(new Color(0xff, 0x00, 0xff));
-		lineStyle.opacity(1);
-		lineStyle.width(10);
+		lineStyle.color(new Color(192, 206, 255));
+		lineStyle.opacity(0.9f);
+		lineStyle.width(2);
 
-		tmsMap.addLayer(ShapefileLayer.from("test-data/shapefiles/shp01.shp", polygonStyle));
-		tmsMap.addLayer(ShapefileLayer.from("test-data/shapefiles/shp02.shp", lineStyle));
+		tmsMap.addLayer(ShapefileLayer.from("test-data/shapefiles/hidro.shp", lineStyle));
 
-		final File outFile = File.createTempFile("TMSMAP", ".png");
-		tmsMap.render(5000, 2500, outFile);
+		lineStyle = new LineStringStyle()
+				  .color(new Color(255, 0, 140))
+				  .opacity(0.8f)
+				  .width(10);
+
+		tmsMap.addLayer(ShapefileLayer.from("test-data/shapefiles/river.shp", lineStyle));
+
+		int[] ws = {5000, 2500, 5000};
+		int[] hs = {5000, 5000, 2500};
+
+		for (int i = 0; i < ws.length; i++) {
+			final File outFile = File.createTempFile("TMSMAP-" + ws[i] + "x" + hs[i] + "-", ".png");
+			tmsMap.render(ws[i], hs[i], outFile);
+		}
 	}
 
 }
