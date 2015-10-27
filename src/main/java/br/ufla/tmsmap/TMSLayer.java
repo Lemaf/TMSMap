@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -98,24 +99,17 @@ public class TMSLayer implements Layer {
 
 			scaleTransform.scale(xscale, yscale);
 
-			URL url;
-			BufferedImage image;
-
-			double northtTile, southTile, westTile, eastTile;
-
-			northtTile = SlippyUtil.latToTileDouble(tileRange.upperCorner.getOrdinate(1), zoom);
-			//southTile = SlippyUtil.latToTileDouble(tileRange.lowerCorner.getOrdinate(1), this.viewport.getZoom());
-			westTile = SlippyUtil.lngToTileDouble(tileRange.lowerCorner.getOrdinate(0), zoom);
-			//eastTile = SlippyUtil.lngToTileDouble(tileRange.upperCorner.getOrdinate(0), this.viewport.getZoom());
+			x1 = x1 % tileWidth;
+			y1 = y1 % tileHeight;
 
 			AffineTransform scaleAndTranslateTransform = new AffineTransform(scaleTransform);
 
-			x1 = (int) (tileWidth * (westTile - tileRange.minX));
-			y1 = (int) (tileHeight * (northtTile - tileRange.minY));
+//			scaleAndTranslateTransform.translate(-x1, -y1);
 
-			scaleAndTranslateTransform.translate(-x1, -y1);
+			URL url;
+			BufferedImage image;
 
-			for (Tile tile : tileRange) {
+			loop: for (Tile tile : tileRange) {
 
 				transform = new AffineTransform(scaleAndTranslateTransform);
 
@@ -133,10 +127,21 @@ public class TMSLayer implements Layer {
 				try {
 					image = ImageIO.read(url);
 				} catch (IOException e) {
+					Throwable cause = e;
+					while (cause != null) {
+						if (cause instanceof FileNotFoundException)
+							continue loop;
+						else
+							cause = cause.getCause();
+					}
 					throw new TMSLayerException(this, tile, e);
 				}
 
-				graphics.drawImage(image, transform, null);
+				try {
+					graphics.drawImage(image, transform, null);
+				} catch (Throwable throwable) {
+					throw new TMSLayerException(this, tile, throwable);
+				}
 			}
 		}
 

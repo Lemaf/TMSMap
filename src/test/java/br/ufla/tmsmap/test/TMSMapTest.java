@@ -20,7 +20,7 @@ public class TMSMapTest {
 		TMSMap tmsMap = new TMSMap();
 
 		tmsMap.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png")));
-		tmsMap.setViewport(Viewport.of(new ReferencedEnvelope(-45.1, -44.9, -21.2, -21.0, DefaultGeographicCRS.WGS84), 12));
+		tmsMap.setViewport(Viewport.of(new ReferencedEnvelope(-45.1, -44.9, -21.2, -21, DefaultGeographicCRS.WGS84), 12));
 
 
 		LineStringStyle lineStyle = new LineStringStyle();
@@ -39,6 +39,14 @@ public class TMSMapTest {
 
 		int[] ws = {5000, 2500, 5000};
 		int[] hs = {5000, 5000, 2500};
+
+		PolygonStyle polygonStyle = (PolygonStyle) new PolygonStyle()
+				  .fillColor(new Color(255, 255, 255))
+				  .fillOpacity(0.2f)
+				  .color(new Color(0xf, 0xf, 0xf))
+				  .width(2);
+
+		tmsMap.addLayer(ShapefileLayer.from("test-data/shapefiles/shp03.shp", polygonStyle));
 
 		for (int i = 0; i < ws.length; i++) {
 			final File outFile = File.createTempFile("TMSMAP-" + ws[i] + "x" + hs[i] + "-", ".png");
