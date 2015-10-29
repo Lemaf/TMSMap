@@ -21,7 +21,7 @@ public class SlippyUtil {
 
 	public static int latToTile(double lat, int zoom) {
 		double rad = toRadians(lat);
-		int tile = (int) floor((1 - log(tan(rad) + 1 / cos(rad)) / PI) / 2 * (1 << zoom));
+		int tile = (int) ((1 << zoom) * ((1 - log(tan(rad) + 1 / cos(rad)) / PI) / 2));
 
 		if (tile < 0)
 			tile = 0;
@@ -65,21 +65,5 @@ public class SlippyUtil {
 			tile = (1 << zoom) - 1;
 
 		return tile;
-	}
-
-	public static double pixelToLng(int x, int zoom, int tileWidth) {
-		final int t = x / tileWidth;
-		double lng1 = tileTolng(t, zoom);
-		double lng2 = tileTolng(t + 1, zoom);
-
-		return lng1 +  ((x % tileWidth) * (lng2 - lng1)) / tileWidth;
-	}
-
-	public static double pixelToLat(int y, int zoom, int tileHeight) {
-		final int t = y / tileHeight;
-		double lat1 = tileTolat(t + 1, zoom);
-		double lat2 = tileTolat(t,zoom);
-
-		return lat1 + ((y % tileHeight) * (lat2 - lat1)) / tileHeight;
 	}
 }

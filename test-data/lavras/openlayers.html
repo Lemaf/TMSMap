@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>zout</title>
+<title>lavras</title>
 <meta http-equiv="imagetoolbar" content="no"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,13 +16,13 @@ body { width:100%; height:100%; background: #ffffff; }
 <body>
 <div id="map"></div>
 <script type="text/javascript">
-var mapExtent = ol.proj.transformExtent([-45.651771, -21.660352, -44.577676, -20.807654], 'EPSG:4326', 'EPSG:3857');
-var mapMinZoom = 8;
+var mapExtent = ol.proj.transformExtent([-46.061907, -22.193031, -44.402537, -20.650301], 'EPSG:4326', 'EPSG:3857');
+var mapMinZoom = 7;
 var mapMaxZoom = 12;
 var layer = new ol.layer.Tile({
   extent: mapExtent,
   source: new ol.source.XYZ({
-    attributions: [new ol.Attribution({html: 'zout'})],
+    attributions: [new ol.Attribution({html: 'lavras'})],
     url: "{z}/{x}/{y}.png",
     minZoom: mapMinZoom,
     maxZoom: mapMaxZoom
@@ -39,8 +39,8 @@ var map = new ol.Map({
     layer
   ],
   view: new ol.View({
-    center: ol.proj.fromLonLat([-45.114724, -21.234003]),
-    zoom: 9
+    center: ol.proj.fromLonLat([-45.232222, -21.421666]),
+    zoom: 8
   })
 });
 </script>

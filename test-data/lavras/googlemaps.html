@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>zout</title>
+<title>lavras</title>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <style type="text/css">
 html { overflow: hidden; }
@@ -30,9 +30,9 @@ body { background: #f4f4f4;}
 <script type="text/javascript">
 var map;
 var mapBounds = new google.maps.LatLngBounds(
-    new google.maps.LatLng(-21.660352, -45.651771),
-    new google.maps.LatLng(-20.807654, -44.577676));
-var mapMinZoom = 8;
+    new google.maps.LatLng(-22.193031, -46.061907),
+    new google.maps.LatLng(-20.650301, -44.402537));
+var mapMinZoom = 7;
 var mapMaxZoom = 12;
 var maptiler = new google.maps.ImageMapType({
     getTileUrl: function(coord, zoom) { 
@@ -59,8 +59,8 @@ var maptiler = new google.maps.ImageMapType({
 function init() {
     var opts = {
         streetViewControl: false,
-        center: new google.maps.LatLng(-21.234003, -45.114724),
-        zoom: 8
+        center: new google.maps.LatLng(-21.421666, -45.232222),
+        zoom: 7
     };
 	map = new google.maps.Map(document.getElementById("map"), opts);
 	map.setMapTypeId('satellite');

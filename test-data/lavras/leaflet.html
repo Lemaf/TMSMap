@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>zout</title>
+  <title>lavras</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6/leaflet.css" />
   <script src="http://cdn.leafletjs.com/leaflet-0.6/leaflet.js"></script>
   <script>
     function init() {
         var bounds = new L.LatLngBounds(
-            new L.LatLng(-21.660352, -45.651771),
-            new L.LatLng(-20.807654, -44.577676));
+            new L.LatLng(-22.193031, -46.061907),
+            new L.LatLng(-20.650301, -44.402537));
         var map = L.map('map').fitBounds(bounds);
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         var options = {
-            minZoom: 8,
+            minZoom: 7,
             maxZoom: 12,
             opacity: 1.0,
             tms: false

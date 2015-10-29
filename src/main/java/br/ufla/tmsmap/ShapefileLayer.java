@@ -26,7 +26,7 @@ public class ShapefileLayer implements Layer {
 	}
 
 	@Override
-	public org.geotools.map.Layer toMapLayer(MapViewport viewport, int zoom) {
+	public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom) {
 
 		ShapefileDataStore dataStore;
 		try {

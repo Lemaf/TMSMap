@@ -73,7 +73,7 @@ public class TMSMap {
 		mapViewport.setScreenArea(new Rectangle(width, height));
 
 		for (Layer layer : layers)
-			mapContent.addLayer(layer.toMapLayer(mapViewport, viewport.getZoom()));
+			mapContent.addLayer(layer.createMapLayer(mapViewport, viewport.getZoom()));
 
 		mapContent.setViewport(mapViewport);
 

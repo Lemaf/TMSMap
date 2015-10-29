@@ -29,6 +29,7 @@ public class TMSLayer implements Layer {
 	private final String baseUrl;
 	private final int tileWidth;
 	private final int tileHeight;
+	private boolean debug = true;
 
 	public TMSLayer(String url, int tileWidth, int tileHeight) throws MalformedURLException {
 		assert url != null : "URL is null";
@@ -53,7 +54,7 @@ public class TMSLayer implements Layer {
 	}
 
 	@Override
-	public DirectLayer toMapLayer(MapViewport viewport, int zoom) {
+	public DirectLayer createMapLayer(MapViewport viewport, int zoom) {
 		return new TMSDirectLayer(viewport, zoom);
 	}
 
@@ -92,7 +93,8 @@ public class TMSLayer implements Layer {
 
 			TileRange tileRange = new TileRange(viewport.getBounds(), zoom);
 
-			AffineTransform scaleTransform = new AffineTransform(), transform;
+			AffineTransform scaleTransform = new AffineTransform(),
+					  transform = new AffineTransform();
 
 			double xscale = viewport.getScreenArea().getWidth() / width,
 					  yscale = viewport.getScreenArea().getHeight() / height;
@@ -102,21 +104,18 @@ public class TMSLayer implements Layer {
 			x1 = x1 % tileWidth;
 			y1 = y1 % tileHeight;
 
-			AffineTransform scaleAndTranslateTransform = new AffineTransform(scaleTransform);
-
-//			scaleAndTranslateTransform.translate(-x1, -y1);
-
 			URL url;
 			BufferedImage image;
 
 			loop: for (Tile tile : tileRange) {
 
-				transform = new AffineTransform(scaleAndTranslateTransform);
+				transform.setToIdentity();
 
-				x1 = tileWidth * (tile.x - tileRange.minX);
-				y1 = tileHeight * (tile.y - tileRange.minY);
+				x2 = tileWidth * (tile.x - tileRange.minX);
+				y2 = tileHeight * (tile.y - tileRange.minY);
 
-				transform.translate(x1, y1);
+				transform.concatenate(scaleTransform);
+				transform.translate(x2 - x1, y2 - y1);
 
 				try {
 					url = urlOf(tile);
@@ -129,11 +128,14 @@ public class TMSLayer implements Layer {
 				} catch (IOException e) {
 					Throwable cause = e;
 					while (cause != null) {
-						if (cause instanceof FileNotFoundException)
+						if (cause instanceof FileNotFoundException) {
 							continue loop;
-						else
+						}
+						else {
 							cause = cause.getCause();
+						}
 					}
+
 					throw new TMSLayerException(this, tile, e);
 				}
 
@@ -148,15 +150,6 @@ public class TMSLayer implements Layer {
 		@Override
 		public ReferencedEnvelope getBounds() {
 			return viewport.getBounds();
-		}
-
-		private double normalize(double value) {
-			if (value < 0D)
-				return 0D;
-			else if (value > 1D)
-				return 1D;
-			else
-				return value;
 		}
 
 		@Override
