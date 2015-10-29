@@ -60,7 +60,7 @@ public class TMSMapTest {
 		}
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void compassRose() throws IOException {
 		TMSMap map = new TMSMap();
 
@@ -78,6 +78,27 @@ public class TMSMapTest {
 			map.render(ws[i], hs[i], outImageFile);
 
 			assertThat(outImageFile).exists().canRead();
+		}
+	}
+
+	@Test
+	public void scaleBar() throws IOException {
+		TMSMap map = new TMSMap();
+
+		map.addLayer(TMSLayer.from(LAVRAS_TILES));
+		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 32), new Color(0xff, 0xff, 0xff)).right(10).bottom(10).height(20));
+		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 16), new Color(0xff, 0xff, 0xff)).right(10).top(10).height(20));
+		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 16), new Color(0xff, 0xff, 0xff)).left(10).bottom(10).height(20));
+		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 32), new Color(0xff, 0xff, 0xff)).left(10).top(10).height(20));
+
+		map.setViewport(Viewport.of(ENVELOPE, 12));
+
+		int[] ws = {2000, 1000, 2000, 4000}, hs = {2000, 1000, 1000, 4000};
+
+		for (int i = 0; i < ws.length; i++) {
+			File out = File.createTempFile(String.format("TMSMAP-scaleBarSimple-%dx%d", ws[i], hs[i]), ".png");
+			map.render(ws[i], hs[i], out);
+			assertThat(out).exists().canRead();
 		}
 	}
 }

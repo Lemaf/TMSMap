@@ -28,6 +28,23 @@ public class TMSMap {
 	private final List<Layer> layers = new LinkedList<>();
 	private Viewport viewport;
 
+	public static double unprojectLat(double y) {
+		return atan(sinh(PI * (1 - 2 * y))) * RAD_180__PI;
+	}
+
+	public static double unprojectLng(double x) {
+		return x * 360D - 180D;
+	}
+
+	public static double projectLat(double lat) {
+		double rad = toRadians(lat);
+		return (1 - (Math.log(Math.tan(rad) + 1 / cos(rad)) / PI)) / 2;
+	}
+
+	public static double projectLng(double lng) {
+		return (lng + 180) / 360;
+	}
+
 	public TMSMap addLayer(Layer layer) {
 		layers.add(layer);
 		return this;
@@ -47,7 +64,7 @@ public class TMSMap {
 		double y2 = projectLat(lower.getOrdinate(1));
 
 		double mapAspect = (x2 - x1) / (y2 - y1);
-		double screenAspect = ((double ) width) / height;
+		double screenAspect = ((double) width) / height;
 
 		if (screenAspect != mapAspect) {
 			if (screenAspect > mapAspect) {
@@ -78,23 +95,6 @@ public class TMSMap {
 		mapContent.setViewport(mapViewport);
 
 		return mapContent;
-	}
-
-	private double unprojectLat(double y) {
-		return atan(sinh(PI * (1 - 2 * y))) * RAD_180__PI;
-	}
-
-	private double unprojectLng(double x) {
-		return x * 360D - 180D;
-	}
-
-	private double projectLat(double lat) {
-		double rad = toRadians(lat);
-		return (1 - (Math.log(Math.tan(rad) + 1 / cos(rad)) / PI)) / 2;
-	}
-
-	private double projectLng(double lng) {
-		return (lng + 180) / 360;
 	}
 
 	public void render(int width, int height, File file) throws IOException {
