@@ -131,6 +131,8 @@ public class TMSMap {
 		graphics.setColor(TRANSPARENT);
 		graphics.fill(mapContent.getViewport().getScreenArea());
 
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
 		render.setMapContent(mapContent);
 		render.paint(graphics, mapContent.getViewport().getScreenArea(), mapContent.getViewport().getBounds());
 

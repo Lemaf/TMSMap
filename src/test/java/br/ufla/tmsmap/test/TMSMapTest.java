@@ -20,7 +20,7 @@ public class TMSMapTest {
 	public static final ReferencedEnvelope ENVELOPE = new ReferencedEnvelope(-45.1, -44.9, -21.2, -21, DefaultGeographicCRS.WGS84);
 	public static final File LAVRAS_TILES = new File("test-data/lavras/{z}/{x}/{y}.png");
 
-	@Test(enabled = false)
+	@Test()
 	public void simpleTest() throws IOException {
 		TMSMap tmsMap = new TMSMap();
 
@@ -60,7 +60,7 @@ public class TMSMapTest {
 		}
 	}
 
-	@Test(enabled = false)
+	@Test()
 	public void compassRose() throws IOException {
 		TMSMap map = new TMSMap();
 
