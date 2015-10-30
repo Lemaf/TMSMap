@@ -3,6 +3,7 @@ package br.ufla.tmsmap;
 import org.geotools.styling.Stroke;
 
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * Created by rthoth on 26/10/15.
@@ -12,6 +13,7 @@ public class LineStringStyle extends Style {
 	protected Color color;
 	protected int width;
 	protected float opacity;
+	protected float[] dashArray;
 
 	public LineStringStyle color(Color color) {
 		this.color = color;
@@ -23,8 +25,18 @@ public class LineStringStyle extends Style {
 		return combine(STYLE_FACTORY.createLineSymbolizer(getStroke(), null));
 	}
 
+	public LineStringStyle dashArray(float[] floats) {
+		this.dashArray = Arrays.copyOf(floats, floats.length);
+		return this;
+	}
+
 	protected Stroke getStroke() {
-		return STYLE_FACTORY.createStroke(literal(color), literal(width), literal(opacity));
+		Stroke stroke = STYLE_FACTORY.createStroke(literal(color), literal(width), literal(opacity));
+
+		if (this.dashArray != null && this.dashArray.length > 0)
+			stroke.setDashArray(dashArray);
+
+		return stroke;
 	}
 
 	public LineStringStyle opacity(float opacity) {

@@ -75,7 +75,8 @@ public class JTSTest {
 				  .fillOpacity(0.8f)
 				  .color(new Color(255, 102, 0))
 				  .opacity(0.5f)
-				  .width(3);
+				  .width(3)
+		.dashArray(new float[]{5, 10, 20});
 
 		map.addLayer(getTmsLayer());
 		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, style, geomOf(POLY_01)));
