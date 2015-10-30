@@ -24,8 +24,8 @@ import java.net.URLDecoder;
  */
 public class TMSLayer implements Layer {
 
-	private static final int TILE_WIDTH = 256;
-	private static final int TILE_HEIGHT = 256;
+	public static final int TILE_WIDTH = 256;
+	public static final int TILE_HEIGHT = 256;
 
 	private final String baseUrl;
 	private final int tileWidth;

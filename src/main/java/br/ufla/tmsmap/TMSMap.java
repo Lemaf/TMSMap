@@ -19,6 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static br.ufla.tmsmap.TMSLayer.TILE_HEIGHT;
+import static br.ufla.tmsmap.TMSLayer.TILE_WIDTH;
 import static java.lang.Math.*;
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 
@@ -28,17 +30,20 @@ import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 public class TMSMap {
 
 	public static final String PNG = "png";
+	public static final String JPEG = "jpg";
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	private static final double RAD_180__PI = 180D / PI;
-	public static final String JPEG = "jpg";
 	private static final Map<String, Integer> IMAGE_TYPE_MAP = new HashMap<>();
-	private final List<Layer> layers = new LinkedList<>();
-	private Viewport viewport;
 
 	static {
 		IMAGE_TYPE_MAP.put(PNG, BufferedImage.TYPE_INT_ARGB);
 		IMAGE_TYPE_MAP.put(JPEG, BufferedImage.TYPE_INT_RGB);
 	}
+
+	private final List<Layer> layers = new LinkedList<>();
+	private Viewport viewport;
+	private Integer horizontalPadding = null;
+	private Integer verticalPadding = null;
 
 	public static double unprojectLat(double y) {
 		return atan(sinh(PI * (1 - 2 * y))) * RAD_180__PI;
@@ -62,6 +67,19 @@ public class TMSMap {
 		return this;
 	}
 
+	private void dispose(MapContent mapContent) {
+
+		for (org.geotools.map.Layer layer : mapContent.layers()) {
+			try {
+				layer.preDispose();
+			} finally {
+
+			}
+		}
+
+		mapContent.dispose();
+	}
+
 	private MapContent newMapContent(int width, int height, ColorModel colorModel) {
 		MapContent mapContent = new MapContent();
 
@@ -77,6 +95,7 @@ public class TMSMap {
 
 		double mapAspect = (x2 - x1) / (y2 - y1);
 		double screenAspect = ((double) width) / height;
+		double lng1, lng2, lat1, lat2;
 
 		if (screenAspect != mapAspect) {
 			if (screenAspect > mapAspect) {
@@ -89,12 +108,47 @@ public class TMSMap {
 				y2 += dy;
 			}
 
-			double lng1 = unprojectLng(x1);
-			double lng2 = unprojectLng(x2);
-			double lat1 = unprojectLat(y1);
-			double lat2 = unprojectLat(y2);
+			lng1 = unprojectLng(x1);
+			lng2 = unprojectLng(x2);
+			lat1 = unprojectLat(y1);
+			lat2 = unprojectLat(y2);
 
 			envelope = new ReferencedEnvelope(lng1, lng2, lat2, lat1, envelope.getCoordinateReferenceSystem());
+
+			lower = envelope.getLowerCorner();
+			upper = envelope.getUpperCorner();
+		}
+
+		if (horizontalPadding != null && verticalPadding != null) {
+			int n = (int) Math.pow(2, viewport.getZoom());
+
+			int xPixels = n * TILE_WIDTH;
+			int yPixels = n * TILE_HEIGHT;
+
+			x1 *= xPixels;
+			x2 *= xPixels;
+			y1 *= yPixels;
+			y2 *= yPixels;
+
+			double xscale = width / (x2 - x1), yscale = height / (y2 - y1);
+
+			x1 -= horizontalPadding / xscale;
+			x2 += horizontalPadding / xscale;
+			y1 -= verticalPadding / yscale;
+			y2 += verticalPadding / yscale;
+
+			x1 /= xPixels;
+			x2 /= xPixels;
+			y1 /= yPixels;
+			y2 /= yPixels;
+
+			lower.setOrdinate(0, lng1 = unprojectLng(x1));
+			upper.setOrdinate(0, lng2 = unprojectLng(x2));
+			upper.setOrdinate(1, lat1 = unprojectLat(y1));
+			lower.setOrdinate(1, lat2 = unprojectLat(y2));
+
+
+
 		}
 
 
@@ -109,25 +163,17 @@ public class TMSMap {
 		return mapContent;
 	}
 
+	public void padding(int horizontal, int vertical) {
+		this.horizontalPadding = horizontal;
+		this.verticalPadding = vertical;
+	}
+
 	public void render(int width, int height, String formarName, OutputStream outputStream) {
 		try {
 			dispose(render0(width, height, formarName, outputStream));
 		} catch (Throwable e) {
 			throw new TMSMapException(e);
 		}
-	}
-
-	private void dispose(MapContent mapContent) {
-
-		for (org.geotools.map.Layer layer : mapContent.layers()) {
-			try {
-				layer.preDispose();
-			} finally {
-
-			}
-		}
-
-		mapContent.dispose();
 	}
 
 	public void render(int width, int height, File file) throws IOException {
@@ -169,7 +215,6 @@ public class TMSMap {
 		assert formatName != null : "formatName is null!";
 
 		StreamingRenderer render = new StreamingRenderer();
-
 
 
 		Integer imageType = IMAGE_TYPE_MAP.get(formatName);
