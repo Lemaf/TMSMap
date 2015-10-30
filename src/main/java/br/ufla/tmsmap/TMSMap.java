@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.lang.Math.*;
+import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 
 /**
  * Created by rthoth on 21/10/15.
@@ -171,7 +172,6 @@ public class TMSMap {
 		render.setMapContent(mapContent);
 		render.paint(graphics, mapContent.getViewport().getScreenArea(), mapContent.getViewport().getBounds());
 
-
 		ImageIO.write(image, formatName, outputStream);
 
 		return mapContent;
@@ -179,5 +179,9 @@ public class TMSMap {
 
 	public void setViewport(Viewport viewport) {
 		this.viewport = viewport;
+	}
+
+	public void zoom(double lngMin, double lngMax, double latMin, double latMax, int zoom) {
+		setViewport(new Viewport(new ReferencedEnvelope(lngMin, lngMax, latMin, latMax, WGS84), zoom));
 	}
 }
