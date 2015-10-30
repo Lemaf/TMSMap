@@ -11,14 +11,13 @@ import java.awt.*;
  */
 public class Helper {
 	public static Style getStyle01() {
-		PolygonStyle style = new PolygonStyle();
-		style.fillColor(new Color(255, 236, 46))
+		return new PolygonStyle()
+				  .fillColor(new Color(255, 236, 46))
 				  .fillOpacity(0.7f)
 				  .color(new Color(255, 127, 17))
 				  .opacity(0.5f)
 				  .width(2)
 				  .dashArray(5, 10, 20);
-		return style;
 	}
 
 	public static Style getLineStyle01() {
