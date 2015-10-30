@@ -25,8 +25,8 @@ public class LineStringStyle extends Style {
 		return combine(STYLE_FACTORY.createLineSymbolizer(getStroke(), null));
 	}
 
-	public LineStringStyle dashArray(float[] floats) {
-		this.dashArray = Arrays.copyOf(floats, floats.length);
+	public LineStringStyle dashArray(float... dashsArray) {
+		this.dashArray = Arrays.copyOf(dashsArray, dashsArray.length);
 		return this;
 	}
 

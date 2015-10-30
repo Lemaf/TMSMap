@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,9 +23,9 @@ import static java.lang.Math.*;
  */
 public class TMSMap {
 
+	public static final String PNG = "png";
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	private static final double RAD_180__PI = 180D / PI;
-
 	private final List<Layer> layers = new LinkedList<>();
 	private Viewport viewport;
 
@@ -97,16 +98,23 @@ public class TMSMap {
 		return mapContent;
 	}
 
+	public void render(int width, int height, String formarName, OutputStream outputStream) {
+		try {
+			render0(width, height, formarName, outputStream);
+		} catch (Throwable e) {
+			throw new TMSMapException(e);
+		}
+	}
+
 	public void render(int width, int height, File file) throws IOException {
-		assert width > 0 : "width is less than or equal to zero";
-		assert height > 0 : "height is less than ou equal to zero";
+		String formatName = file.getName().substring(file.getName().lastIndexOf('.') + 1);
 
-		StreamingRenderer render = new StreamingRenderer();
-
-		MapContent mapContent = newMapContent(width, height);
+		MapContent mapContent;
+		try (FileOutputStream outputStream = new FileOutputStream(file)) {
+			mapContent = render0(width, height, formatName, outputStream);
+		}
 
 		File bboxFile = new File(file.getParentFile(), file.getName() + ".bbox");
-
 		try (FileOutputStream outputStream = new FileOutputStream(bboxFile)) {
 			ReferencedEnvelope envelope = mapContent.getViewport().getBounds();
 
@@ -124,6 +132,15 @@ public class TMSMap {
 			outputStream.write(sb.toString().getBytes());
 			outputStream.flush();
 		}
+	}
+
+	private MapContent render0(int width, int height, String formatName, OutputStream outputStream) throws IOException {
+		assert width > 0 : "width is less than or equal to zero";
+		assert height > 0 : "height is less than ou equal to zero";
+
+		StreamingRenderer render = new StreamingRenderer();
+
+		MapContent mapContent = newMapContent(width, height);
 
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
@@ -136,13 +153,10 @@ public class TMSMap {
 		render.setMapContent(mapContent);
 		render.paint(graphics, mapContent.getViewport().getScreenArea(), mapContent.getViewport().getBounds());
 
-		String extension = file.getName().substring(file.getName().lastIndexOf('.') + 1);
 
-		ImageIO.write(image, extension, file);
+		ImageIO.write(image, formatName, outputStream);
 
-		mapContent.getMaxBounds();
-
-		return;
+		return mapContent;
 	}
 
 	public void setViewport(Viewport viewport) {
