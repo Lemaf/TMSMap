@@ -46,8 +46,8 @@ public class TMSLayer implements Layer {
 		this(url, TILE_WIDTH, TILE_HEIGHT);
 	}
 
-	public static TMSLayer from(String url) throws MalformedURLException {
-		return new TMSLayer(url);
+	public static TMSLayer from(URL url) throws MalformedURLException {
+		return new TMSLayer(url.toString());
 	}
 
 	public static TMSLayer from(File file) throws MalformedURLException, UnsupportedEncodingException {

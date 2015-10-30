@@ -1,5 +1,6 @@
 package br.ufla.tmsmap.test;
 
+import br.ufla.tmsmap.LineStringStyle;
 import br.ufla.tmsmap.PolygonStyle;
 import br.ufla.tmsmap.Style;
 
@@ -18,5 +19,13 @@ public class Helper {
 				  .width(2)
 				  .dashArray(5, 10, 20);
 		return style;
+	}
+
+	public static Style getLineStyle01() {
+		return new LineStringStyle()
+				  .color(new Color(74, 179, 255))
+				  .opacity(0.9f)
+				  .width(3)
+				  .dashArray(10, 1, 1, 1, 5);
 	}
 }
