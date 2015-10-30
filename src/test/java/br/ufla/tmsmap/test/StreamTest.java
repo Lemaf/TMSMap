@@ -6,7 +6,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.testng.annotations.Test;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,7 +26,7 @@ public class StreamTest {
 		TMSMap map = new TMSMap();
 
 		map.addLayer(getTMSLayer());
-		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, getStyle01(), JTSTest.geomOf(JTSTest.POLY_01)));
+		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, Helper.getStyle01(), JTSTest.geomOf(JTSTest.POLY_01)));
 		map.setViewport(VIEWPORT);
 
 		int[] ws = {1000, 500, 1000}, hs = {500, 1000, 1000};
@@ -40,17 +39,6 @@ public class StreamTest {
 
 			assertThat(out).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 		}
-	}
-
-	private Style getStyle01() {
-		PolygonStyle style = new PolygonStyle();
-		style.fillColor(new Color(255, 236, 46))
-				  .fillOpacity(0.7f)
-				  .color(new Color(255, 127, 17))
-				  .opacity(0.5f)
-				  .width(2)
-				  .dashArray(5, 10, 20);
-		return style;
 	}
 
 	private TMSLayer getTMSLayer() throws MalformedURLException, UnsupportedEncodingException {

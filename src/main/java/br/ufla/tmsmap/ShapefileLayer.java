@@ -4,6 +4,7 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapViewport;
 
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,7 +27,7 @@ public class ShapefileLayer implements Layer {
 	}
 
 	@Override
-	public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom) {
+	public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom, ColorModel colorSpace) {
 
 		ShapefileDataStore dataStore;
 		try {

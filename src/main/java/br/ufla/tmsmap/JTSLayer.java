@@ -11,6 +11,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import java.awt.image.ColorModel;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class JTSLayer implements Layer {
 	}
 
 	@Override
-	public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom) {
+	public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom, ColorModel colorSpace) {
 
 		org.geotools.styling.Style mapStyle = style.createStyle();
 

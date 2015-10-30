@@ -7,4 +7,8 @@ public class TMSLayerException extends RuntimeException {
 	public TMSLayerException(TMSLayer.TMSDirectLayer layer, Tile tile, Throwable cause) {
 		super(layer.toString() + " - " + tile.toString(), cause);
 	}
+
+	public TMSLayerException(TMSLayer.TMSDirectLayer layer, Tile tile, String message) {
+		super(layer + " - " + tile + ": " + message);
+	}
 }

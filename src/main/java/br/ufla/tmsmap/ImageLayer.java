@@ -8,6 +8,7 @@ import org.geotools.map.MapViewport;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 
@@ -36,7 +37,7 @@ public class ImageLayer implements Layer {
 	}
 
 	@Override
-	public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom) {
+	public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom, ColorModel colorSpace) {
 		return new MapImageLayer(viewport, zoom);
 	}
 

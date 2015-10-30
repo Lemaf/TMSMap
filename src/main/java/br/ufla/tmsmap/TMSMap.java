@@ -9,12 +9,15 @@ import org.opengis.geometry.DirectPosition;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Math.*;
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
@@ -27,8 +30,15 @@ public class TMSMap {
 	public static final String PNG = "png";
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	private static final double RAD_180__PI = 180D / PI;
+	public static final String JPEG = "jpg";
+	private static final Map<String, Integer> IMAGE_TYPE_MAP = new HashMap<>();
 	private final List<Layer> layers = new LinkedList<>();
 	private Viewport viewport;
+
+	static {
+		IMAGE_TYPE_MAP.put(PNG, BufferedImage.TYPE_INT_ARGB);
+		IMAGE_TYPE_MAP.put(JPEG, BufferedImage.TYPE_INT_RGB);
+	}
 
 	public static double unprojectLat(double y) {
 		return atan(sinh(PI * (1 - 2 * y))) * RAD_180__PI;
@@ -52,7 +62,7 @@ public class TMSMap {
 		return this;
 	}
 
-	private MapContent newMapContent(int width, int height) {
+	private MapContent newMapContent(int width, int height, ColorModel colorModel) {
 		MapContent mapContent = new MapContent();
 
 		ReferencedEnvelope envelope = viewport.getEnvelope();
@@ -92,7 +102,7 @@ public class TMSMap {
 		mapViewport.setScreenArea(new Rectangle(width, height));
 
 		for (Layer layer : layers)
-			mapContent.addLayer(layer.createMapLayer(mapViewport, viewport.getZoom()));
+			mapContent.addLayer(layer.createMapLayer(mapViewport, viewport.getZoom(), colorModel));
 
 		mapContent.setViewport(mapViewport);
 
@@ -156,12 +166,19 @@ public class TMSMap {
 	private MapContent render0(int width, int height, String formatName, OutputStream outputStream) throws IOException {
 		assert width > 0 : "width is less than or equal to zero";
 		assert height > 0 : "height is less than ou equal to zero";
+		assert formatName != null : "formatName is null!";
 
 		StreamingRenderer render = new StreamingRenderer();
 
-		MapContent mapContent = newMapContent(width, height);
 
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+		Integer imageType = IMAGE_TYPE_MAP.get(formatName);
+
+		assert imageType != null : "Invalid format " + formatName;
+
+		BufferedImage image = new BufferedImage(width, height, imageType);
+
+		MapContent mapContent = newMapContent(width, height, image.getColorModel());
 
 		Graphics2D graphics = image.createGraphics();
 		graphics.setColor(TRANSPARENT);

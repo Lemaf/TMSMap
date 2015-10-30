@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -54,8 +55,8 @@ public class TMSLayer implements Layer {
 	}
 
 	@Override
-	public DirectLayer createMapLayer(MapViewport viewport, int zoom) {
-		return new TMSDirectLayer(viewport, zoom);
+	public DirectLayer createMapLayer(MapViewport viewport, int zoom, ColorModel colorSpace) {
+		return new TMSDirectLayer(viewport, zoom, colorSpace);
 	}
 
 	private URL urlOf(Tile tile) throws MalformedURLException {
@@ -69,10 +70,12 @@ public class TMSLayer implements Layer {
 	public class TMSDirectLayer extends DirectLayer {
 		private final int zoom;
 		private final MapViewport viewport;
+		private final ColorModel colorModel;
 
-		public TMSDirectLayer(MapViewport viewport, int zoom) {
+		public TMSDirectLayer(MapViewport viewport, int zoom, ColorModel colorModel) {
 			this.viewport = viewport;
 			this.zoom = zoom;
+			this.colorModel = colorModel;
 		}
 
 		@Override

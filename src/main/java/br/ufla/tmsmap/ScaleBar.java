@@ -7,6 +7,7 @@ import org.geotools.map.MapViewport;
 import org.opengis.geometry.DirectPosition;
 
 import java.awt.*;
+import java.awt.image.ColorModel;
 
 /**
  * Created by rthoth on 29/10/15.
@@ -83,7 +84,7 @@ public class ScaleBar<T extends ScaleBar<?>> {
 		}
 
 		@Override
-		public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom) {
+		public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom, ColorModel colorSpace) {
 			return new MapSimple(zoom, viewport.getBounds());
 		}
 
