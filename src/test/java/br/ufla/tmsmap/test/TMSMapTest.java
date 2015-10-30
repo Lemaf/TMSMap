@@ -56,7 +56,7 @@ public class TMSMapTest {
 		for (int i = 0; i < ws.length; i++) {
 			final File outFile = File.createTempFile("TMSMAP-" + ws[i] + "x" + hs[i] + "-", ".png");
 			tmsMap.render(ws[i], hs[i], outFile);
-			assertThat(outFile).exists().canRead();
+			assertThat(outFile).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class TMSMapTest {
 			File outImageFile = File.createTempFile("TMSMAP-Compass-rose-" + ws[i] + "x" + hs[i] + "-", ".png");
 			map.render(ws[i], hs[i], outImageFile);
 
-			assertThat(outImageFile).exists().canRead();
+			assertThat(outImageFile).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class TMSMapTest {
 		for (int i = 0; i < ws.length; i++) {
 			File out = File.createTempFile(String.format("TMSMAP-scaleBarSimple-%dx%d", ws[i], hs[i]), ".png");
 			map.render(ws[i], hs[i], out);
-			assertThat(out).exists().canRead();
+			assertThat(out).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 		}
 	}
 }

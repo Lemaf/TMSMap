@@ -57,7 +57,7 @@ public class JTSTest {
 			File out = File.createTempFile(String.format("TMS-JTS-%dx%d-", ws[i], hs[i]), ".png");
 			map.render(ws[i], hs[i], out);
 
-			assertThat(out).exists().canRead();
+			assertThat(out).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class JTSTest {
 		for (int i=0; i < ws.length; i++) {
 			File out = File.createTempFile(String.format("TMS-JTS-%dx%d-", ws[i], hs[i]), ".png");
 			map.render(ws[i], hs[i], out);
-			assertThat(out).exists().canRead();
+			assertThat(out).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 		}
 
 	}

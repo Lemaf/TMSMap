@@ -100,10 +100,23 @@ public class TMSMap {
 
 	public void render(int width, int height, String formarName, OutputStream outputStream) {
 		try {
-			render0(width, height, formarName, outputStream);
+			dispose(render0(width, height, formarName, outputStream));
 		} catch (Throwable e) {
 			throw new TMSMapException(e);
 		}
+	}
+
+	private void dispose(MapContent mapContent) {
+
+		for (org.geotools.map.Layer layer : mapContent.layers()) {
+			try {
+				layer.preDispose();
+			} finally {
+
+			}
+		}
+
+		mapContent.dispose();
 	}
 
 	public void render(int width, int height, File file) throws IOException {
@@ -114,24 +127,29 @@ public class TMSMap {
 			mapContent = render0(width, height, formatName, outputStream);
 		}
 
-		File bboxFile = new File(file.getParentFile(), file.getName() + ".bbox");
-		try (FileOutputStream outputStream = new FileOutputStream(bboxFile)) {
-			ReferencedEnvelope envelope = mapContent.getViewport().getBounds();
+		try {
+			File bboxFile = new File(file.getParentFile(), file.getName() + ".bbox");
+			try (FileOutputStream outputStream = new FileOutputStream(bboxFile)) {
+				ReferencedEnvelope envelope = mapContent.getViewport().getBounds();
 
-			StringBuilder sb = new StringBuilder();
-			sb.append(envelope.getCoordinateReferenceSystem().getName().getCode())
-					  .append(';')
-					  .append(envelope.getMinX())
-					  .append(',')
-					  .append(envelope.getMinY())
-					  .append(":")
-					  .append(envelope.getMaxX())
-					  .append(',')
-					  .append(envelope.getMaxY());
+				StringBuilder sb = new StringBuilder();
+				sb.append(envelope.getCoordinateReferenceSystem().getName().getCode())
+						  .append(';')
+						  .append(envelope.getMinX())
+						  .append(',')
+						  .append(envelope.getMinY())
+						  .append(":")
+						  .append(envelope.getMaxX())
+						  .append(',')
+						  .append(envelope.getMaxY());
 
-			outputStream.write(sb.toString().getBytes());
-			outputStream.flush();
+				outputStream.write(sb.toString().getBytes());
+				outputStream.flush();
+			}
+		} finally {
+			dispose(mapContent);
 		}
+
 	}
 
 	private MapContent render0(int width, int height, String formatName, OutputStream outputStream) throws IOException {
