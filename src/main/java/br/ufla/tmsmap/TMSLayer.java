@@ -133,8 +133,7 @@ public class TMSLayer implements Layer {
 					while (cause != null) {
 						if (cause instanceof FileNotFoundException) {
 							continue loop;
-						}
-						else {
+						} else {
 							cause = cause.getCause();
 						}
 					}
