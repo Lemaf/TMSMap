@@ -38,4 +38,25 @@ public class PaddingTest {
 
 		assertThat(imageFile).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 	}
+
+	@Test
+	public void padding_10_10() throws IOException, ParseException {
+		TMSMap map = new TMSMap();
+
+		map.addLayer(TMSHelper.getTMSLayer01());
+		Geometry geometry = JTSTest.geomOf(JTSTest.POLY_01);
+		map.addLayer(JTSLayer.from(WGS84, Helper.getStyle01(), geometry));
+
+		Envelope envelope = geometry.getEnvelopeInternal();
+
+		map.zoom(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY(), 12);
+
+		map.padding(10, 10);
+
+		File imageFile = File.createTempFile("TMS-Padding_10_10-", ".png");
+		map.render(500, 500, imageFile);
+
+		assertThat(imageFile).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
+
+	}
 }

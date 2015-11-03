@@ -88,14 +88,48 @@ public class TMSMap {
 		DirectPosition lower = envelope.getLowerCorner();
 		DirectPosition upper = envelope.getUpperCorner();
 
-		double x1 = projectLng(lower.getOrdinate(0));
-		double y1 = projectLat(upper.getOrdinate(1));
-		double x2 = projectLng(upper.getOrdinate(0));
-		double y2 = projectLat(lower.getOrdinate(1));
+		double lng1, lng2, lat1, lat2;
+
+		lng1 = lower.getOrdinate(0);
+		lng2 = upper.getOrdinate(0);
+		lat1 = upper.getOrdinate(1);
+		lat2 = lower.getOrdinate(1);
+
+		double x1 = projectLng(lng1);
+		double x2 = projectLng(lng2);
+		double y1 = projectLat(lat1);
+		double y2 = projectLat(lat2);
+
+
+		if (horizontalPadding != null || verticalPadding != null) {
+			int hPadding = horizontalPadding != null ? horizontalPadding : 0;
+			int vPadding = verticalPadding != null ? verticalPadding : 0;
+
+			int n = (int) Math.pow(2, viewport.getZoom());
+
+			int xPixels = n * TILE_WIDTH;
+			int yPixels = n * TILE_HEIGHT;
+
+			x1 *= xPixels;
+			x2 *= xPixels;
+			y1 *= yPixels;
+			y2 *= yPixels;
+
+			double xscale = width / (x2 - x1), yscale = height / (y2 - y1);
+
+			x1 -= hPadding / xscale;
+			x2 += hPadding / xscale;
+			y1 -= vPadding / yscale;
+			y2 += vPadding / yscale;
+
+			x1 /= xPixels;
+			x2 /= xPixels;
+			y1 /= yPixels;
+			y2 /= yPixels;
+		}
 
 		double mapAspect = (x2 - x1) / (y2 - y1);
 		double screenAspect = ((double) width) / height;
-		double lng1, lng2, lat1, lat2;
 
 		if (screenAspect != mapAspect) {
 			if (screenAspect > mapAspect) {
@@ -114,42 +148,8 @@ public class TMSMap {
 			lat2 = unprojectLat(y2);
 
 			envelope = new ReferencedEnvelope(lng1, lng2, lat2, lat1, envelope.getCoordinateReferenceSystem());
-
-			lower = envelope.getLowerCorner();
-			upper = envelope.getUpperCorner();
 		}
 
-		if (horizontalPadding != null && verticalPadding != null) {
-			int n = (int) Math.pow(2, viewport.getZoom());
-
-			int xPixels = n * TILE_WIDTH;
-			int yPixels = n * TILE_HEIGHT;
-
-			x1 *= xPixels;
-			x2 *= xPixels;
-			y1 *= yPixels;
-			y2 *= yPixels;
-
-			double xscale = width / (x2 - x1), yscale = height / (y2 - y1);
-
-			x1 -= horizontalPadding / xscale;
-			x2 += horizontalPadding / xscale;
-			y1 -= verticalPadding / yscale;
-			y2 += verticalPadding / yscale;
-
-			x1 /= xPixels;
-			x2 /= xPixels;
-			y1 /= yPixels;
-			y2 /= yPixels;
-
-			lower.setOrdinate(0, lng1 = unprojectLng(x1));
-			upper.setOrdinate(0, lng2 = unprojectLng(x2));
-			upper.setOrdinate(1, lat1 = unprojectLat(y1));
-			lower.setOrdinate(1, lat2 = unprojectLat(y2));
-
-
-
-		}
 
 
 		MapViewport mapViewport = new MapViewport(envelope, false);
