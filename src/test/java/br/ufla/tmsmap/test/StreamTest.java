@@ -35,7 +35,7 @@ public class StreamTest {
 			File out = File.createTempFile(String.format("TMSMap-Stream-%dx%d-", ws[i], hs[i]), ".png");
 
 			FileOutputStream outputStream = new FileOutputStream(out);
-			map.render(ws[i], hs[i], TMSMap.PNG, outputStream);
+			map.render(ws[i], hs[i], Format.PNG, outputStream);
 
 			assertThat(out).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 		}

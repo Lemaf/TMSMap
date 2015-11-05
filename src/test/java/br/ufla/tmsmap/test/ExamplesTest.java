@@ -32,7 +32,7 @@ public class ExamplesTest {
 		OutputStream imageStream = new FileOutputStream(File.createTempFile("TMSMap-Example-01.02-", ".png"));
 
 		map.render(500, 500, imageFile);
-		map.render(500, 500, TMSMap.PNG, imageStream);
+		map.render(500, 500, Format.PNG, imageStream);
 
 	}
 

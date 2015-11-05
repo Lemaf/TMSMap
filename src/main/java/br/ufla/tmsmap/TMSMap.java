@@ -29,15 +29,13 @@ import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
  */
 public class TMSMap {
 
-	public static final String PNG = "png";
-	public static final String JPEG = "jpg";
 	private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	private static final double RAD_180__PI = 180D / PI;
-	private static final Map<String, Integer> IMAGE_TYPE_MAP = new HashMap<>();
+	private static final Map<Format, Integer> IMAGE_TYPE_MAP = new HashMap<>();
 
 	static {
-		IMAGE_TYPE_MAP.put(PNG, BufferedImage.TYPE_INT_ARGB);
-		IMAGE_TYPE_MAP.put(JPEG, BufferedImage.TYPE_INT_RGB);
+		IMAGE_TYPE_MAP.put(Format.PNG, BufferedImage.TYPE_INT_ARGB);
+		IMAGE_TYPE_MAP.put(Format.JPEG, BufferedImage.TYPE_INT_RGB);
 	}
 
 	private final List<Layer> layers = new LinkedList<>();
@@ -168,9 +166,9 @@ public class TMSMap {
 		this.verticalPadding = vertical;
 	}
 
-	public void render(int width, int height, String formarName, OutputStream outputStream) {
+	public void render(int width, int height, Format format, OutputStream outputStream) {
 		try {
-			dispose(render0(width, height, formarName, outputStream));
+			dispose(render0(width, height, format, outputStream));
 		} catch (Throwable e) {
 			throw new TMSMapException(e);
 		}
@@ -181,7 +179,7 @@ public class TMSMap {
 
 		MapContent mapContent;
 		try (FileOutputStream outputStream = new FileOutputStream(file)) {
-			mapContent = render0(width, height, formatName, outputStream);
+			mapContent = render0(width, height, Format.from(formatName), outputStream);
 		}
 
 		try {
@@ -209,17 +207,17 @@ public class TMSMap {
 
 	}
 
-	private MapContent render0(int width, int height, String formatName, OutputStream outputStream) throws IOException {
+	private MapContent render0(int width, int height, Format format, OutputStream outputStream) throws IOException {
 		assert width > 0 : "width is less than or equal to zero";
 		assert height > 0 : "height is less than ou equal to zero";
-		assert formatName != null : "formatName is null!";
+		assert format != null : "formatName is null!";
 
 		StreamingRenderer render = new StreamingRenderer();
 
 
-		Integer imageType = IMAGE_TYPE_MAP.get(formatName);
+		Integer imageType = IMAGE_TYPE_MAP.get(format);
 
-		assert imageType != null : "Invalid format " + formatName;
+		assert imageType != null : "Invalid format " + format.name();
 
 		BufferedImage image = new BufferedImage(width, height, imageType);
 
@@ -234,7 +232,7 @@ public class TMSMap {
 		render.setMapContent(mapContent);
 		render.paint(graphics, mapContent.getViewport().getScreenArea(), mapContent.getViewport().getBounds());
 
-		ImageIO.write(image, formatName, outputStream);
+		ImageIO.write(image, format.formatName, outputStream);
 
 		return mapContent;
 	}

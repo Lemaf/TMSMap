@@ -1,5 +1,6 @@
 package br.ufla.tmsmap.test;
 
+import br.ufla.tmsmap.Format;
 import br.ufla.tmsmap.ImageLayer;
 import br.ufla.tmsmap.JTSLayer;
 import br.ufla.tmsmap.TMSMap;
@@ -27,7 +28,7 @@ public class ImageConversionTest {
 
 		File tempFile = File.createTempFile("TMS-tilePNGToJPEG-", ".jpg");
 		FileOutputStream outputStream = new FileOutputStream(tempFile);
-		map.render(500, 500, TMSMap.JPEG, outputStream);
+		map.render(500, 500, Format.JPEG, outputStream);
 
 		assertThat(tempFile).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 	}
