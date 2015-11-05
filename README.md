@@ -24,7 +24,7 @@ map.render(500, 500, imageFile);
 
 // Or write on stream
 OutputStream imageStream = new FileOutputStream(new File("TMSMap-Example-01.02.png"));
-map.render(500, 500, TMSMap.PNG, imageStream);
+map.render(500, 500, Format.PNG, imageStream);
 ```
 
 ### Shapefile
