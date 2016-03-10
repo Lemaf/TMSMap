@@ -107,4 +107,31 @@ public class ExamplesTest {
 
 		map.render(500, 500, File.createTempFile("TMSMap-Example-05-", ".png"));
 	}
+
+
+	@Test
+	public void example06_tms() throws IOException, ParseException {
+		TMSMap map = new TMSMap();
+
+		map.addLayer(TMSLayer.from(new File("test-data/lavras-tms/{z}/{x}/{y}.png"), false));
+
+		Style style = new PolygonStyle()
+				.fillColor(new Color(0x97FF33))
+				.fillOpacity(0.6f)
+				.color(new Color(0xFF4921))
+				.opacity(0.6f);
+
+		Geometry g1 = JTSTest.geomOf(JTSTest.POLY_01);
+		Geometry g2 = JTSTest.geomOf(JTSTest.POLY_02);
+
+		Envelope env = g1.getEnvelopeInternal();
+		env.expandToInclude(g2.getEnvelopeInternal());
+
+		map.zoom(env, 12);
+		map.padding(100, 100);
+
+		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, style, g1, g2));
+
+		map.render(1200, 1200, File.createTempFile("TMSMap-Example-06-tms", ".png"));
+	}
 }
