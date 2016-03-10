@@ -21,7 +21,7 @@ public class TileRange implements Iterable<Tile> {
 	public final int maxY;
 	public final int minY;
 
-	public TileRange(ReferencedEnvelope envelope, int zoom) {
+	public TileRange(ReferencedEnvelope envelope, int zoom, boolean tms) {
 		lowerCorner = envelope.getLowerCorner();
 		upperCorner = envelope.getUpperCorner();
 		this.zoom = zoom;
@@ -31,8 +31,17 @@ public class TileRange implements Iterable<Tile> {
 
 		assert minX <= maxX : "minX <= maxX";
 
-		minY = SlippyUtil.latToTile(upperCorner.getOrdinate(1), zoom);
-		maxY = SlippyUtil.latToTile(lowerCorner.getOrdinate(1), zoom);
+		int minY = SlippyUtil.latToTile(upperCorner.getOrdinate(1), zoom);
+		int maxY = SlippyUtil.latToTile(lowerCorner.getOrdinate(1), zoom);
+
+		if (tms) {
+			int sup = SlippyUtil.latToTile(90, zoom);
+			this.minY = sup - minY - 1;
+			this.maxY = sup - maxY - 1;
+		} else {
+			this.minY = minY;
+			this.maxY = maxY;
+		}
 
 		assert minY <= maxY : "minY <= maxY";
 

@@ -24,7 +24,7 @@ public class TMSMapTest {
 	public void simpleTest() throws IOException {
 		TMSMap tmsMap = new TMSMap();
 
-		tmsMap.addLayer(TMSLayer.from(LAVRAS_TILES));
+		tmsMap.addLayer(TMSLayer.from(LAVRAS_TILES, false));
 		tmsMap.setViewport(Viewport.of(ENVELOPE, 12));
 
 
@@ -64,7 +64,7 @@ public class TMSMapTest {
 	public void compassRose() throws IOException {
 		TMSMap map = new TMSMap();
 
-		map.addLayer(TMSLayer.from(LAVRAS_TILES));
+		map.addLayer(TMSLayer.from(LAVRAS_TILES, false));
 
 		map.addLayer(ImageLayer.from(new File("test-data/compass-rose.png")).right(50).bottom(50));
 		map.addLayer(ImageLayer.from(new File("test-data/compass-rose.png")).left(50).top(50));
@@ -85,7 +85,7 @@ public class TMSMapTest {
 	public void scaleBar() throws IOException {
 		TMSMap map = new TMSMap();
 
-		map.addLayer(TMSLayer.from(LAVRAS_TILES));
+		map.addLayer(TMSLayer.from(LAVRAS_TILES, false));
 		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 32), new Color(0xff, 0xff, 0xff)).right(10).bottom(10).height(20));
 		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 16), new Color(0xff, 0xff, 0xff)).right(10).top(10).height(20));
 		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 16), new Color(0xff, 0xff, 0xff)).left(10).bottom(10).height(20));

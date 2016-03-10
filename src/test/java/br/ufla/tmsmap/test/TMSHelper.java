@@ -12,6 +12,6 @@ import java.net.MalformedURLException;
  */
 public class TMSHelper {
 	public static Layer getTMSLayer01() throws MalformedURLException, UnsupportedEncodingException {
-		return TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"));
+		return TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"), false);
 	}
 }

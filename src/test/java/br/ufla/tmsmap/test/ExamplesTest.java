@@ -25,7 +25,7 @@ public class ExamplesTest {
 	public void example01() throws IOException {
 		TMSMap map = new TMSMap();
 
-		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png")));
+		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"), false));
 		map.zoom(-45.28374, -45.18135, -21.13236, -21.04297, 12);
 
 		File imageFile = File.createTempFile("TMSMap-Example-01.01-", ".png");
@@ -42,7 +42,7 @@ public class ExamplesTest {
 
 		URL url = new URL(URLDecoder.decode(new File("test-data/lavras/{z}/{x}/{y}.png").toURI().toURL().toString(), "UTF-8"));
 
-		map.addLayer(TMSLayer.from(url));
+		map.addLayer(TMSLayer.from(url, false));
 		map.addLayer(ShapefileLayer.from("test-data/shapefiles/hidro.shp", Helper.getLineStyle01()));
 		map.zoom(-45.28374, -45.18135, -21.13236, -21.04297, 12);
 
@@ -54,7 +54,7 @@ public class ExamplesTest {
 	public void example03() throws IOException {
 		TMSMap map = new TMSMap();
 
-		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png")));
+		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"), false));
 		map.zoom(-45.28374, -45.18135, -21.13236, -21.04297, 12);
 
 		map.addLayer(ImageLayer.from(new File("test-data/compass-rose.png")).right(40).top(20));
@@ -71,7 +71,7 @@ public class ExamplesTest {
 		Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
 		Color color = new Color(255, 255, 255);
 
-		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png")));
+		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"), false));
 		map.addLayer(ScaleBar.Simple.from(font, color).bottom(10).left(10).height(10));
 
 		map.zoom(-45.28374, -45.18135, -21.13236, -21.04297, 12);
@@ -83,7 +83,7 @@ public class ExamplesTest {
 	public void example05() throws ParseException, IOException {
 		TMSMap map = new TMSMap();
 
-		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png")));
+		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"), false));
 
 		CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
 
