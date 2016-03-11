@@ -30,9 +30,10 @@ public class TMSLayer implements Layer {
 	private final String baseUrl;
 	private final int tileWidth;
 	private final int tileHeight;
+	private final boolean tms;
 	private boolean debug = true;
 
-	public TMSLayer(String url, int tileWidth, int tileHeight) throws MalformedURLException {
+	private TMSLayer(String url, int tileWidth, int tileHeight, boolean tms) throws MalformedURLException {
 		assert url != null : "URL is null";
 		assert tileHeight > 0 : "TileHeight must be greater than zero";
 		assert tileWidth > 0 : "TileWidth must be greater than zero";
@@ -40,18 +41,27 @@ public class TMSLayer implements Layer {
 		this.baseUrl = url;
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
+		this.tms = tms;
 	}
 
-	public TMSLayer(String url) throws MalformedURLException {
-		this(url, TILE_WIDTH, TILE_HEIGHT);
+	private TMSLayer(String url, boolean tms) throws MalformedURLException {
+		this(url, TILE_WIDTH, TILE_HEIGHT, tms);
 	}
 
 	public static TMSLayer from(URL url) throws MalformedURLException {
-		return new TMSLayer(url.toString());
+		return from(url, true);
+	}
+
+	public static TMSLayer from(URL url, boolean tms) throws MalformedURLException {
+		return new TMSLayer(url.toString(), tms);
+	}
+
+	public static TMSLayer from(File file, boolean tms) throws MalformedURLException, UnsupportedEncodingException {
+		return new TMSLayer(URLDecoder.decode(file.toURI().toURL().toString(), "UTF-8"), tms);
 	}
 
 	public static TMSLayer from(File file) throws MalformedURLException, UnsupportedEncodingException {
-		return new TMSLayer(URLDecoder.decode(file.toURI().toURL().toString(), "UTF-8"));
+		return from(file, true);
 	}
 
 	@Override
@@ -61,9 +71,9 @@ public class TMSLayer implements Layer {
 
 	private URL urlOf(Tile tile) throws MalformedURLException {
 		return new URL(baseUrl
-				  .replace("{x}", String.valueOf(tile.x))
-				  .replace("{y}", String.valueOf(tile.y))
-				  .replace("{z}", String.valueOf(tile.z))
+				.replace("{x}", String.valueOf(tile.x))
+				.replace("{y}", String.valueOf(tile.y))
+				.replace("{z}", String.valueOf(tile.z))
 		);
 	}
 
@@ -84,7 +94,7 @@ public class TMSLayer implements Layer {
 			int x1, y1, x2, y2;
 
 			DirectPosition lowerCorner = viewport.getBounds().getLowerCorner(),
-					  upperCorner = viewport.getBounds().getUpperCorner();
+					upperCorner = viewport.getBounds().getUpperCorner();
 
 			x1 = (int) (tileWidth * (SlippyUtil.lngToTileDouble(lowerCorner.getOrdinate(0), zoom)));
 			x2 = (int) (tileWidth * (SlippyUtil.lngToTileDouble(upperCorner.getOrdinate(0), zoom)));
@@ -92,15 +102,24 @@ public class TMSLayer implements Layer {
 			y1 = (int) (tileHeight * (SlippyUtil.latToTileDouble(upperCorner.getOrdinate(1), zoom)));
 			y2 = (int) (tileHeight * (SlippyUtil.latToTileDouble(lowerCorner.getOrdinate(1), zoom)));
 
+			if (tms) {
+				int max = (int) (tileHeight * SlippyUtil.latToTileDouble(-90D, zoom));
+
+				int temp = y1;
+				y1 = max - y2;
+				y2 = max - temp;
+			}
+
+
 			int width = x2 - x1, height = y2 - y1;
 
-			TileRange tileRange = new TileRange(viewport.getBounds(), zoom);
+			TileRange tileRange = new TileRange(viewport.getBounds(), zoom, tms);
 
 			AffineTransform scaleTransform = new AffineTransform(),
-					  transform = new AffineTransform();
+					transform = new AffineTransform();
 
 			double xscale = viewport.getScreenArea().getWidth() / width,
-					  yscale = viewport.getScreenArea().getHeight() / height;
+					yscale = viewport.getScreenArea().getHeight() / height;
 
 			scaleTransform.scale(xscale, yscale);
 
@@ -110,12 +129,17 @@ public class TMSLayer implements Layer {
 			URL url;
 			BufferedImage image;
 
-			loop: for (Tile tile : tileRange) {
+			loop:
+			for (Tile tile : tileRange) {
 
 				transform.setToIdentity();
 
 				x2 = tileWidth * (tile.x - tileRange.minX);
-				y2 = tileHeight * (tile.y - tileRange.minY);
+
+				if (tms)
+					y2 = tileHeight * (tileRange.maxY - tile.y);
+				else
+					y2 = tileHeight * (tile.y - tileRange.minY);
 
 				transform.concatenate(scaleTransform);
 				transform.translate(x2 - x1, y2 - y1);

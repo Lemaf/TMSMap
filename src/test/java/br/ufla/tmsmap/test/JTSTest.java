@@ -62,7 +62,7 @@ public class JTSTest {
 	}
 
 	private TMSLayer getTmsLayer() throws MalformedURLException, UnsupportedEncodingException {
-		return TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"));
+		return TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"), false);
 	}
 
 	@Test
