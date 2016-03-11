@@ -127,13 +127,12 @@ public class ExamplesTest {
 
 		Envelope env = g1.getEnvelopeInternal();
 		env.expandToInclude(g2.getEnvelopeInternal());
-		env.expandBy(0.2D);
 
 		map.zoom(env, 12);
-		map.padding(100, 100);
+		map.padding(50, 10);
 
 		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, style, g1, g2));
 
-		map.render(1200, 1200, File.createTempFile("TMSMap-Example-06-tms", ".png"));
+		map.render(500, 500, File.createTempFile("TMSMap-Example-06-tms", ".png"));
 	}
 }
