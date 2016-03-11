@@ -9,13 +9,39 @@
   import br.ufla.tmsmap.*;
 ```
 
-### TMSLayer
+## TMSLayer
+
+```java
+TMSMap map = new TMSMap();
+
+map.addLayer(TMSLayer.from(new File("test-data/lavras-tms/{z}/{x}/{y}.png")));
+
+Style style = new PolygonStyle()
+	.fillColor(new Color(0x97FF33))
+	.fillOpacity(0.6f)
+	.color(new Color(0xFF4921))
+	.opacity(0.6f);
+
+Geometry g1 = JTSTest.geomOf(JTSTest.POLY_01);
+Geometry g2 = JTSTest.geomOf(JTSTest.POLY_02);
+
+Envelope env = g1.getEnvelopeInternal();
+env.expandToInclude(g2.getEnvelopeInternal());
+
+map.zoom(env, 12);
+map.padding(10, 10);
+
+map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, style, g1, g2));
+map.render(500, 500, File.createTempFile("TMSMap-Example-06-tms", ".png"));
+```
+
+## Tile Layers
 
 ```java
 TMSMap map = new TMSMap();
 
 // Local tiles
-map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png")));
+map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png"), false));
 map.zoom(-45.28374, -45.18135, -21.13236, -21.04297, 12);
 
 // Write a file
@@ -34,7 +60,7 @@ TMSMap map = new TMSMap();
 
 // External tiles
 URL url = new URL("http://localhost/layer/{z}/{x}/{y}.png");
-map.addLayer(TMSLayer.from(url));
+map.addLayer(TMSLayer.from(url, false));
 
 // Shapefile layer
 
@@ -58,7 +84,7 @@ map.render(1000, 1250, imageFile);
 ```java
 TMSMap map = new TMSMap();
 
-map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png")));
+map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png"), false));
 map.zoom(-45.28374, -45.18135, -21.13236, -21.04297, 12);
 
 map.addLayer(ImageLayer.from(new File("compass-rose.png")).right(40).top(20));
@@ -75,7 +101,7 @@ TMSMap map = new TMSMap();
 Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
 Color color = new Color(255, 255, 255);
 
-map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png")));
+map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png"), false));
 map.addLayer(ScaleBar.Simple.from(font, color).bottom(10).left(10).height(10));
 
 map.zoom(-45.28374, -45.18135, -21.13236, -21.04297, 12);
@@ -89,7 +115,7 @@ map.render(600, 600, new File("TMSMap-Example-04.png"));
 ```java
 TMSMap map = new TMSMap();
 
-map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png")));
+map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png"), false));
 
 // TMSMap needs a CRS
 CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
