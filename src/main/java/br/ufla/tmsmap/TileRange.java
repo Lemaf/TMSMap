@@ -35,9 +35,9 @@ public class TileRange implements Iterable<Tile> {
 		int maxY = SlippyUtil.latToTile(lowerCorner.getOrdinate(1), zoom);
 
 		if (tms) {
-			int sup = SlippyUtil.latToTile(90, zoom);
-			this.minY = sup - minY - 1;
-			this.maxY = sup - maxY - 1;
+			int max = SlippyUtil.latToTile(-90D, zoom);
+			this.minY = max - maxY;
+			this.maxY = max - minY;
 		} else {
 			this.minY = minY;
 			this.maxY = maxY;

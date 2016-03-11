@@ -113,7 +113,8 @@ public class ExamplesTest {
 	public void example06_tms() throws IOException, ParseException {
 		TMSMap map = new TMSMap();
 
-		map.addLayer(TMSLayer.from(new File("test-data/lavras-tms/{z}/{x}/{y}.png"), false));
+//		map.addLayer(TMSLayer.from(new URL("http://www.car.gov.br/mosaicos/{z}/{x}/{y}.jpg")));
+		map.addLayer(TMSLayer.from(new File("test-data/lavras-tms/{z}/{x}/{y}.png")));
 
 		Style style = new PolygonStyle()
 				.fillColor(new Color(0x97FF33))
@@ -126,6 +127,7 @@ public class ExamplesTest {
 
 		Envelope env = g1.getEnvelopeInternal();
 		env.expandToInclude(g2.getEnvelopeInternal());
+		env.expandBy(0.2D);
 
 		map.zoom(env, 12);
 		map.padding(100, 100);

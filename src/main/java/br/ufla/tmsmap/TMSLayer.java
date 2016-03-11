@@ -33,7 +33,7 @@ public class TMSLayer implements Layer {
 	private final boolean tms;
 	private boolean debug = true;
 
-	public TMSLayer(String url, int tileWidth, int tileHeight, boolean tms) throws MalformedURLException {
+	private TMSLayer(String url, int tileWidth, int tileHeight, boolean tms) throws MalformedURLException {
 		assert url != null : "URL is null";
 		assert tileHeight > 0 : "TileHeight must be greater than zero";
 		assert tileWidth > 0 : "TileWidth must be greater than zero";
@@ -44,13 +44,14 @@ public class TMSLayer implements Layer {
 		this.tms = tms;
 	}
 
-	public TMSLayer(String url, boolean tms) throws MalformedURLException {
+	private TMSLayer(String url, boolean tms) throws MalformedURLException {
 		this(url, TILE_WIDTH, TILE_HEIGHT, tms);
 	}
 
 	public static TMSLayer from(URL url) throws MalformedURLException {
 		return from(url, true);
 	}
+
 	public static TMSLayer from(URL url, boolean tms) throws MalformedURLException {
 		return new TMSLayer(url.toString(), tms);
 	}
@@ -97,9 +98,18 @@ public class TMSLayer implements Layer {
 
 			x1 = (int) (tileWidth * (SlippyUtil.lngToTileDouble(lowerCorner.getOrdinate(0), zoom)));
 			x2 = (int) (tileWidth * (SlippyUtil.lngToTileDouble(upperCorner.getOrdinate(0), zoom)));
-			
+
 			y1 = (int) (tileHeight * (SlippyUtil.latToTileDouble(upperCorner.getOrdinate(1), zoom)));
 			y2 = (int) (tileHeight * (SlippyUtil.latToTileDouble(lowerCorner.getOrdinate(1), zoom)));
+
+			if (tms) {
+				int max = (int) (tileHeight * SlippyUtil.latToTileDouble(-90D, zoom));
+
+				int temp = y1;
+				y1 = max - y2;
+				y2 = max - temp;
+			}
+
 
 			int width = x2 - x1, height = y2 - y1;
 
@@ -125,7 +135,11 @@ public class TMSLayer implements Layer {
 				transform.setToIdentity();
 
 				x2 = tileWidth * (tile.x - tileRange.minX);
-				y2 = tileHeight * (tile.y - tileRange.minY);
+
+				if (tms)
+					y2 = tileHeight * (tileRange.maxY - tile.y);
+				else
+					y2 = tileHeight * (tile.y - tileRange.minY);
 
 				transform.concatenate(scaleTransform);
 				transform.translate(x2 - x1, y2 - y1);
