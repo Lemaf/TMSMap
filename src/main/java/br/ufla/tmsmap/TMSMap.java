@@ -1,5 +1,6 @@
 package br.ufla.tmsmap;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
@@ -149,7 +150,6 @@ public class TMSMap {
 		}
 
 
-
 		MapViewport mapViewport = new MapViewport(envelope, false);
 		mapViewport.setScreenArea(new Rectangle(width, height));
 
@@ -189,14 +189,14 @@ public class TMSMap {
 
 				StringBuilder sb = new StringBuilder();
 				sb.append(envelope.getCoordinateReferenceSystem().getName().getCode())
-						  .append(';')
-						  .append(envelope.getMinX())
-						  .append(',')
-						  .append(envelope.getMinY())
-						  .append(":")
-						  .append(envelope.getMaxX())
-						  .append(',')
-						  .append(envelope.getMaxY());
+						.append(';')
+						.append(envelope.getMinX())
+						.append(',')
+						.append(envelope.getMinY())
+						.append(":")
+						.append(envelope.getMaxX())
+						.append(',')
+						.append(envelope.getMaxY());
 
 				outputStream.write(sb.toString().getBytes());
 				outputStream.flush();
@@ -243,5 +243,9 @@ public class TMSMap {
 
 	public void zoom(double lngMin, double lngMax, double latMin, double latMax, int zoom) {
 		setViewport(new Viewport(new ReferencedEnvelope(lngMin, lngMax, latMin, latMax, WGS84), zoom));
+	}
+
+	public void zoom(Envelope env, int zoom) {
+		zoom(env.getMinX(), env.getMaxX(), env.getMinY(), env.getMaxY(), zoom);
 	}
 }
