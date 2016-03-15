@@ -22,9 +22,10 @@ public class Error01Test {
 	public void delta() throws IOException {
 		TMSMap tmsMap = new TMSMap();
 
-		tmsMap.addLayer(TMSLayer.from(new URL("http://a.tile.osm.org/{z}/{x}/{y}.png"), false));
+//		tmsMap.addLayer(TMSLayer.from(new URL("http://a.tile.osm.org/{z}/{x}/{y}.png"), false));
 //		tmsMap.addLayer(TMSLayer.from(new URL("http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.jpg"), false));
 //		tmsMap.addLayer(TMSLayer.from(new URL("https://b.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IlpIdEpjOHcifQ.Cldl4wq_T5KOgxhLvbjE-w"), false));
+		tmsMap.addLayer(TMSLayer.from(new URL("http://www.car.gov.br/mosaicos/{z}/{x}/{y}.jpg")));
 		Geometry geometry = JTSTest.geomFromGeoJSON(GeoJSON01);
 
 		Style style = new PolygonStyle()
