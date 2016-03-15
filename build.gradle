@@ -30,6 +30,7 @@ dependencies {
 
     testCompile "org.testng:testng:6.9.8"
     testCompile "org.assertj:assertj-core:2.2.0"
+    testCompile "org.geotools:gt-geojson:$GeoToolsVersion"
 }
 
 test {
@@ -61,7 +62,7 @@ publishing {
 
             groupId "br.ufla"
             artifactId "tmsmap"
-            version "0.1.1"
+            version "0.1.5"
 
             from components.java
 
