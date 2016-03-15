@@ -124,7 +124,7 @@ public class TMSLayer implements Layer {
 			scaleTransform.scale(xscale, yscale);
 
 			x1 = x1 % tileWidth;
-			y1 = y1 % tileHeight;
+			y1 = (tms) ? tileHeight - (y2 % tileHeight) : y1 % tileHeight;
 
 			URL url;
 			BufferedImage image;
@@ -133,15 +133,16 @@ public class TMSLayer implements Layer {
 			for (Tile tile : tileRange) {
 
 				transform.setToIdentity();
+				transform.concatenate(scaleTransform);
 
 				x2 = tileWidth * (tile.x - tileRange.minX);
 
-				if (tms)
+				if (tms) {
 					y2 = tileHeight * (tileRange.maxY - tile.y);
-				else
+				} else {
 					y2 = tileHeight * (tile.y - tileRange.minY);
+				}
 
-				transform.concatenate(scaleTransform);
 				transform.translate(x2 - x1, y2 - y1);
 
 				try {

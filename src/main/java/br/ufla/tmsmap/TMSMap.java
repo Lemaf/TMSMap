@@ -43,6 +43,7 @@ public class TMSMap {
 	private Viewport viewport;
 	private Integer horizontalPadding = null;
 	private Integer verticalPadding = null;
+	private Object zoom;
 
 	public static double unprojectLat(double y) {
 		return atan(sinh(PI * (1 - 2 * y))) * RAD_180__PI;
@@ -54,7 +55,7 @@ public class TMSMap {
 
 	public static double projectLat(double lat) {
 		double rad = toRadians(lat);
-		return (1 - (Math.log(Math.tan(rad) + 1 / cos(rad)) / PI)) / 2;
+		return (1 - (log(Math.tan(rad) + 1 / cos(rad)) / PI)) / 2;
 	}
 
 	public static double projectLng(double lng) {
@@ -247,5 +248,28 @@ public class TMSMap {
 
 	public void zoom(Envelope env, int zoom) {
 		zoom(env.getMinX(), env.getMaxX(), env.getMinY(), env.getMaxY(), zoom);
+	}
+
+	public void zoomTo(Envelope envelope, int width, int height) {
+		zoomTo(envelope, width, height, 0, 15, 256, 256);
+	}
+
+	public void zoomTo(Envelope envelope, int width, int height, int minZoom, int maxZoom, int tileWidth, int tileHeight) {
+		assert minZoom <= maxZoom : "minZoom <= maxZoom";
+
+		int pZoom;
+
+		double n = width / (tileWidth * (projectLng(envelope.getMaxX()) - projectLng(envelope.getMinX())));
+		int z = (int) (log(n) / log(2));
+		pZoom = min(max(minZoom, z), maxZoom);
+
+		n = height / (tileHeight * (projectLat(envelope.getMinY()) - projectLat(envelope.getMaxY())));
+		z = (int) (log(n) / log(2));
+
+		zoom(envelope, min(pZoom, z));
+	}
+
+	public Integer getZoom() {
+		return viewport != null ? viewport.getZoom() : null;
 	}
 }
