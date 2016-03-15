@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import static br.ufla.tmsmap.TMSLayer.TILE_HEIGHT;
 import static br.ufla.tmsmap.TMSLayer.TILE_WIDTH;
@@ -40,10 +41,19 @@ public class TMSMap {
 	}
 
 	private final List<Layer> layers = new LinkedList<>();
+	private final ScheduledThreadPoolExecutor executor;
+
 	private Viewport viewport;
 	private Integer horizontalPadding = null;
 	private Integer verticalPadding = null;
-	private Object zoom;
+
+	public TMSMap(int poolSize) {
+		executor = (poolSize > 0) ? new ScheduledThreadPoolExecutor(poolSize) : null;
+	}
+
+	public TMSMap() {
+		this(0);
+	}
 
 	public static double unprojectLat(double y) {
 		return atan(sinh(PI * (1 - 2 * y))) * RAD_180__PI;
@@ -154,8 +164,13 @@ public class TMSMap {
 		MapViewport mapViewport = new MapViewport(envelope, false);
 		mapViewport.setScreenArea(new Rectangle(width, height));
 
-		for (Layer layer : layers)
-			mapContent.addLayer(layer.createMapLayer(mapViewport, viewport.getZoom(), colorModel));
+		for (Layer layer : layers) {
+			if (executor != null && layer instanceof ConcurrentLayer) {
+				mapContent.addLayer(((ConcurrentLayer) layer).createMapLayer(mapViewport, viewport.getZoom(), colorModel, executor));
+			} else {
+				mapContent.addLayer(layer.createMapLayer(mapViewport, viewport.getZoom(), colorModel));
+			}
+		}
 
 		mapContent.setViewport(mapViewport);
 
