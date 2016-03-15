@@ -146,8 +146,6 @@ public class TMSLayer implements ConcurrentLayer {
 
 			loop:
 			for (Tile tile : tileRange) {
-
-
 				try {
 					url = urlOf(tile);
 				} catch (MalformedURLException e) {

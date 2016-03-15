@@ -52,7 +52,7 @@ public class TMSMap {
 	}
 
 	public TMSMap() {
-		this(0);
+		this(8);
 	}
 
 	public static double unprojectLat(double y) {
