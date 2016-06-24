@@ -8,6 +8,7 @@ import org.geotools.map.MapViewport;
 import org.opengis.geometry.DirectPosition;
 
 import javax.imageio.ImageIO;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -19,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
@@ -133,7 +135,13 @@ public class TMSLayer implements ConcurrentLayer {
 			scaleTransform.scale(xscale, yscale);
 
 			x1 = x1 % tileWidth;
-			y1 = (tms) ? tileHeight - (y2 % tileHeight) : y1 % tileHeight;
+			if (tms) {
+				y1 = y2 % tileHeight;
+				if (y1 != 0)
+					y1 = tileHeight - y1;
+			} else {
+				y1 = y1 % tileHeight;
+			} 
 
 			drawTileRange(tileRange, graphics, x1, y1, scaleTransform);
 		}
@@ -184,7 +192,7 @@ public class TMSLayer implements ConcurrentLayer {
 			} else {
 				y2 = tileHeight * (tile.y - tileRange.minY);
 			}
-
+			
 			transform.translate(x2 - x1, y2 - y1);
 
 			try {
