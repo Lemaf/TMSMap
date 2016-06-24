@@ -10,3 +10,8 @@ gradle-app.setting
 .idea/
 
 TMSMap.iml
+
+.classpath
+.project
+.settings/
+bin/
