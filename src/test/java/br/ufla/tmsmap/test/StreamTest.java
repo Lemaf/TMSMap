@@ -21,7 +21,6 @@ public class StreamTest {
 
 	public static final Viewport VIEWPORT = Viewport.of(new ReferencedEnvelope(-45.28374, -45.18135, -21.13236, -21.04297, DefaultGeographicCRS.WGS84), 12);
 
-	@Test
 	public void basicSupport() throws IOException, ParseException {
 		TMSMap map = new TMSMap();
 
