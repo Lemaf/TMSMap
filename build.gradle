@@ -42,18 +42,18 @@ task sourceJar (type: Jar) {
     from sourceSets.main.allJava
 }
 
-task javaDocJar (type: Jar) {
-    from "${docsDir}/javadoc"
-} dependsOn('javadoc')
+task javadocJar(type: Jar) {
+	 from javadoc
+}
 
 publishing {
 
     repositories {
         maven {
-            url "http://repo.ti.lemaf.ufla.br/nexus/content/repositories/releases/"
+            url "http://repo.ti.lemaf.ufla.br/repository/releases/"
             credentials {
-                username "deployment"
-                password "l3m4f"
+                username "$lemafUser"
+                password "$lemafPassword"
             }
         }
     }
@@ -63,11 +63,11 @@ publishing {
 
             groupId "br.ufla"
             artifactId "tmsmap"
-            version "0.1.6"
+            version "1.0.0"
 
             from components.java
 
-            artifact javaDocJar {
+            artifact javadocJar {
                 classifier "javadoc"
             }
 
