@@ -69,18 +69,60 @@ public class ScaleBar<T extends ScaleBar<?>> {
 		return (T) this;
 	}
 
-	public static class Simple extends ScaleBar<Simple> implements Layer {
+	public static class SimpleStyle {
+		private Color dark = Color.BLACK;
+		private Font font;
+		private Color fontColor = Color.BLACK;
+		private Color light = Color.WHITE;
 
-		private final Font font;
-		private final Color color;
-
-		public Simple(Font font, Color color) {
-			this.font = font;
-			this.color = color;
+		public SimpleStyle dark(Color dark) {
+			if (dark != null)
+				this.dark = dark;
+			return this;
 		}
 
-		public static Simple from(Font font, Color color) {
-			return new Simple(font, color);
+		public SimpleStyle font(Font font) {
+			this.font = font;
+			return this;
+		}
+
+		public SimpleStyle fontColor(Color fontColor) {
+			if (fontColor != null)
+				this.fontColor = fontColor;
+			return this;
+		}
+
+		public SimpleStyle light(Color light) {
+			if (light != null)
+				this.light = light;
+			return this;
+		}
+	}
+
+	public static class Simple extends ScaleBar<Simple> implements Layer {
+
+		private final Color darkColor;
+		private final Font font;
+		private final Color fontColor;
+		private final Color lightColor;
+
+		public Simple(SimpleStyle style) {
+			this.font = style.font;
+			this.fontColor = style.fontColor;
+			this.darkColor = style.dark;
+			this.lightColor = style.light;
+		}
+
+		public static SimpleStyle style() {
+			return new SimpleStyle();
+		}
+
+		public static Simple from(SimpleStyle style) {
+			return new Simple(style);
+		}
+
+		public static Simple from(Font font, Color fontColor) {
+			return new Simple(new SimpleStyle().font(font).fontColor(fontColor));
 		}
 
 		@Override
@@ -96,7 +138,6 @@ public class ScaleBar<T extends ScaleBar<?>> {
 				this.zoom = zoom;
 				this.bounds = bounds;
 			}
-
 
 			@Override
 			public void draw(Graphics2D graphics, MapContent map, MapViewport viewport) {
@@ -136,8 +177,7 @@ public class ScaleBar<T extends ScaleBar<?>> {
 				else
 					y = (int) (viewport.getScreenArea().getHeight() - bottom - height - INTERNAL_MARGIN);
 
-				graphics.setColor(color);
-
+				graphics.setColor(fontColor);
 				graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				graphics.setFont(font);
 				graphics.drawString(label, x, y);
@@ -156,11 +196,12 @@ public class ScaleBar<T extends ScaleBar<?>> {
 					y = (int) (viewport.getScreenArea().getHeight() - bottom - height);
 				}
 
+				graphics.setColor(darkColor);
 				graphics.fillRect(x, y, scaleWidth, height);
 
 				int subscaleWidth = scaleWidth / SUBSCALES;
 
-				graphics.setColor(new Color(color.getRed() / 2, color.getGreen() / 2, color.getBlue() / 2));
+				graphics.setColor(lightColor);
 				for (int subX = x + subscaleWidth, subEnd = x + scaleWidth - subscaleWidth; subX < subEnd; subX += subscaleWidth * 2) {
 					graphics.fillRect(subX, y, subscaleWidth, height);
 				}
