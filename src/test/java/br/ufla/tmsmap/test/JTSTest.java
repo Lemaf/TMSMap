@@ -47,7 +47,7 @@ public class JTSTest {
 				  .width(4);
 
 		map.addLayer(getTmsLayer());
-		map.addLayer(ScaleBar.Simple.from(new Font(Font.SANS_SERIF, Font.BOLD, 16), new Color(0xff, 0xff, 0x00)).bottom(10).right(15).height(16));
+		map.addLayer(ScaleBar.Simple.from(ScaleBar.Simple.style().font(new Font(Font.SANS_SERIF, Font.BOLD, 16)).fontColor(new Color(0xff, 0xff, 0x00))).bottom(10).right(15).height(16));
 		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, style, geom));
 
 		map.setViewport(VIEWPORT);

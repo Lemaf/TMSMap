@@ -80,6 +80,21 @@ public class ExamplesTest {
 	}
 
 	@Test
+	public void example04_01() throws IOException {
+		TMSMap map = new TMSMap();
+
+		Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
+		Color color = new Color(255, 255, 255);
+
+		map.addLayer(TMSLayer.from(new File("test-data/lavras/{z}/{x}/{y}.png"), false));
+		map.addLayer(ScaleBar.Simple.from(ScaleBar.Simple.style().font(font).fontColor(color).dark(new Color(209, 59, 116)).light(new Color(185, 228, 0)) ).bottom(10).left(10).height(10));
+
+		map.zoom(-45.28374, -45.18135, -21.13236, -21.04297, 12);
+
+		map.render(600, 600, File.createTempFile("TMSMap-Example-04-01-", ".png"));
+	}
+
+	@Test
 	public void example05() throws ParseException, IOException {
 		TMSMap map = new TMSMap();
 
