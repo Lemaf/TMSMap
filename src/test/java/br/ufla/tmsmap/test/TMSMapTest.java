@@ -86,10 +86,10 @@ public class TMSMapTest {
 		TMSMap map = new TMSMap();
 
 		map.addLayer(TMSLayer.from(LAVRAS_TILES, false));
-		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 32), new Color(0xff, 0xff, 0xff)).right(10).bottom(10).height(20));
-		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 16), new Color(0xff, 0xff, 0xff)).right(10).top(10).height(20));
-		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 16), new Color(0xff, 0xff, 0xff)).left(10).bottom(10).height(20));
-		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 32), new Color(0xff, 0xff, 0xff)).left(10).top(10).height(20));
+		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 32)).right(10).bottom(10).height(20));
+		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 16)).right(10).top(10).height(20));
+		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 16)).left(10).bottom(10).height(20));
+		map.addLayer(ScaleBar.Simple.from(new Font(Font.MONOSPACED, Font.ITALIC, 32)).left(10).top(10).height(20));
 
 		map.setViewport(Viewport.of(ENVELOPE, 12));
 

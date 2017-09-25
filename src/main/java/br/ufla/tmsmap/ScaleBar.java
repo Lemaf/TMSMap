@@ -15,6 +15,7 @@ import java.awt.image.ColorModel;
 public class ScaleBar<T extends ScaleBar<?>> {
 
 	public static final int INTERNAL_MARGIN = 5;
+	public static final int BACKGROUND_PADDING = 5;
 	private static final int[] SCALES = {
 			  500000, 250000, 100000, 50000, 25000, 10000, 1000, 500, 250, 100, 50, 25, 10
 	};
@@ -74,6 +75,13 @@ public class ScaleBar<T extends ScaleBar<?>> {
 		private Font font;
 		private Color fontColor = Color.BLACK;
 		private Color light = Color.WHITE;
+		private Color background = new Color(0xff, 0xff, 0xff,  0x80);
+
+		public SimpleStyle background(Color background) {
+			if (background != null)
+				this.background = background;
+			return this;
+		}
 
 		public SimpleStyle dark(Color dark) {
 			if (dark != null)
@@ -101,6 +109,7 @@ public class ScaleBar<T extends ScaleBar<?>> {
 
 	public static class Simple extends ScaleBar<Simple> implements Layer {
 
+		private final Color backgroundColor;
 		private final Color darkColor;
 		private final Font font;
 		private final Color fontColor;
@@ -111,6 +120,7 @@ public class ScaleBar<T extends ScaleBar<?>> {
 			this.fontColor = style.fontColor;
 			this.darkColor = style.dark;
 			this.lightColor = style.light;
+			this.backgroundColor = style.background;
 		}
 
 		public static SimpleStyle style() {
@@ -121,8 +131,17 @@ public class ScaleBar<T extends ScaleBar<?>> {
 			return new Simple(style);
 		}
 
+
+		public static Simple from(Font font) {
+			return new Simple(new SimpleStyle().font(font));
+		}
+
 		public static Simple from(Font font, Color fontColor) {
 			return new Simple(new SimpleStyle().font(font).fontColor(fontColor));
+		}
+
+		public static Simple from(Font font, Color fontColor, Color backgroundColor) {
+			return new Simple(new SimpleStyle().font(font).fontColor(fontColor).background(backgroundColor));
 		}
 
 		@Override
@@ -165,24 +184,33 @@ public class ScaleBar<T extends ScaleBar<?>> {
 				int labelWidth = fontMetrics.stringWidth(label);
 				int labelHeight = fontMetrics.getHeight();
 
-				int x, y;
+				int scaleWidth = (int) (SCALES[i] * inverse_resolution);
+				int x, y, bx, by, bw = scaleWidth + 2 * BACKGROUND_PADDING, bh = height + 2 * BACKGROUND_PADDING + labelHeight + INTERNAL_MARGIN;
 
-				if (left != null)
+				if (left != null) {
 					x = left;
-				else
+					bx = left - BACKGROUND_PADDING;
+				} else {
 					x = width - labelWidth - right;
+					bx = width - scaleWidth - right - BACKGROUND_PADDING;
+				}
 
-				if (top != null)
+				if (top != null) {
 					y = top + labelHeight;
-				else
+					by = top - BACKGROUND_PADDING;
+				} else {
 					y = (int) (viewport.getScreenArea().getHeight() - bottom - height - INTERNAL_MARGIN);
+					by = (int) (viewport.getScreenArea().getHeight() - bottom - height - labelHeight - INTERNAL_MARGIN - BACKGROUND_PADDING);
+				}
+
+				graphics.setColor(backgroundColor);
+				graphics.fillRect(bx, by, bw, bh);
 
 				graphics.setColor(fontColor);
 				graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				graphics.setFont(font);
 				graphics.drawString(label, x, y);
 
-				int scaleWidth = (int) (SCALES[i] * inverse_resolution);
 
 				if (left != null) {
 					x = left;
@@ -199,11 +227,11 @@ public class ScaleBar<T extends ScaleBar<?>> {
 				graphics.setColor(darkColor);
 				graphics.fillRect(x, y, scaleWidth, height);
 
-				int subscaleWidth = scaleWidth / SUBSCALES;
+				int subScaleWidth = scaleWidth / SUBSCALES;
 
 				graphics.setColor(lightColor);
-				for (int subX = x + subscaleWidth, subEnd = x + scaleWidth - subscaleWidth; subX < subEnd; subX += subscaleWidth * 2) {
-					graphics.fillRect(subX, y, subscaleWidth, height);
+				for (int subX = x + subScaleWidth, subEnd = x + scaleWidth - subScaleWidth; subX < subEnd; subX += subScaleWidth * 2) {
+					graphics.fillRect(subX, y, subScaleWidth, height);
 				}
 			}
 
