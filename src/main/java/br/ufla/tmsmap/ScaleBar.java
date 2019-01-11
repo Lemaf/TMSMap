@@ -7,6 +7,7 @@ import org.geotools.map.MapViewport;
 import org.opengis.geometry.DirectPosition;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
 /**
@@ -114,6 +115,7 @@ public class ScaleBar<T extends ScaleBar<?>> {
 		private final Font font;
 		private final Color fontColor;
 		private final Color lightColor;
+		private String label;
 
 		public Simple(SimpleStyle style) {
 			this.font = style.font;
@@ -144,14 +146,54 @@ public class ScaleBar<T extends ScaleBar<?>> {
 			return new Simple(new SimpleStyle().font(font).fontColor(fontColor).background(backgroundColor));
 		}
 
+		public String getLabel() {
+			return label;
+		}
+
 		@Override
 		public org.geotools.map.Layer createMapLayer(MapViewport viewport, int zoom, ColorModel colorSpace) {
 			return new MapSimple(zoom, viewport.getBounds());
 		}
 
+		/**
+		 * Retorna a imagem da escala desenhada conforme parâmetros do viewport e zoom
+		 * @param viewport
+		 * @param zoom
+		 * @return
+		 */
+		public BufferedImage render(Viewport viewport, int w, int h, int zoom) {
+
+			MapSimple simple = new MapSimple(zoom, viewport.getEnvelope());
+
+			ReferencedEnvelope envelope = viewport.getEnvelope();
+			MapViewport mapViewport = new MapViewport(envelope, false);
+			mapViewport.setScreenArea(new Rectangle(w, h));
+
+			BufferedImage image = new BufferedImage(w, h, Format.PNG.type);
+
+			Graphics2D graphics = image.createGraphics();
+			graphics.setColor(new Color(0, 0, 0, 0));
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+			this.left = BACKGROUND_PADDING;
+			this.right = null;
+			this.top = BACKGROUND_PADDING;
+			this.bottom = null;
+
+			simple.draw(graphics, null, mapViewport);
+
+			graphics.dispose();
+
+			this.label = simple.label;
+
+			return image.getSubimage(simple.bx, simple.by, simple.bw, simple.bh);
+		}
+
 		private class MapSimple extends DirectLayer {
 			private final int zoom;
 			private final ReferencedEnvelope bounds;
+			private int bx, by, bh, bw;
+			private String label;
 
 			public MapSimple(int zoom, ReferencedEnvelope bounds) {
 				this.zoom = zoom;
@@ -178,14 +220,17 @@ public class ScaleBar<T extends ScaleBar<?>> {
 						break;
 				}
 
-				String label = SCALES_LABELS[i];
+				label = SCALES_LABELS[i];
 
 				FontMetrics fontMetrics = graphics.getFontMetrics(font);
 				int labelWidth = fontMetrics.stringWidth(label);
 				int labelHeight = fontMetrics.getHeight();
 
 				int scaleWidth = (int) (SCALES[i] * inverse_resolution);
-				int x, y, bx, by, bw = scaleWidth + 2 * BACKGROUND_PADDING, bh = height + 2 * BACKGROUND_PADDING + labelHeight + INTERNAL_MARGIN;
+				int x, y;
+
+				bw = scaleWidth + 2 * BACKGROUND_PADDING;
+				bh = height + 2 * BACKGROUND_PADDING + labelHeight + INTERNAL_MARGIN;
 
 				if (left != null) {
 					x = left;

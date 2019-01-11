@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
+import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.opengis.geometry.DirectPosition;
 
@@ -191,6 +192,10 @@ public class TMSMap {
 	}
 
 	public void render(int width, int height, File file) throws IOException {
+		render(width, height, file, false);
+	}
+
+	public void render(int width, int height, File file, boolean bbox) throws IOException {
 		String formatName = file.getName().substring(file.getName().lastIndexOf('.') + 1);
 
 		MapContent mapContent;
@@ -198,13 +203,15 @@ public class TMSMap {
 			mapContent = render0(width, height, Format.from(formatName), outputStream);
 		}
 
-		try {
-			File bboxFile = new File(file.getParentFile(), file.getName() + ".bbox");
-			try (FileOutputStream outputStream = new FileOutputStream(bboxFile)) {
-				ReferencedEnvelope envelope = mapContent.getViewport().getBounds();
+		if(bbox) {
 
-				StringBuilder sb = new StringBuilder();
-				sb.append(envelope.getCoordinateReferenceSystem().getName().getCode())
+			try {
+				File bboxFile = new File(file.getParentFile(), file.getName() + ".bbox");
+				try (FileOutputStream outputStream = new FileOutputStream(bboxFile)) {
+					ReferencedEnvelope envelope = mapContent.getViewport().getBounds();
+
+					StringBuilder sb = new StringBuilder();
+					sb.append(envelope.getCoordinateReferenceSystem().getName().getCode())
 						.append(';')
 						.append(envelope.getMinX())
 						.append(',')
@@ -214,10 +221,15 @@ public class TMSMap {
 						.append(',')
 						.append(envelope.getMaxY());
 
-				outputStream.write(sb.toString().getBytes());
-				outputStream.flush();
+					outputStream.write(sb.toString().getBytes());
+					outputStream.flush();
+				}
+			} finally {
+				dispose(mapContent);
 			}
-		} finally {
+		}
+		else {
+
 			dispose(mapContent);
 		}
 
@@ -228,8 +240,7 @@ public class TMSMap {
 		assert height > 0 : "height is less than ou equal to zero";
 		assert format != null : "formatName is null!";
 
-		StreamingRenderer render = new StreamingRenderer();
-
+		GTRenderer render = new StreamingRenderer();
 
 		Integer imageType = IMAGE_TYPE_MAP.get(format);
 
@@ -248,10 +259,14 @@ public class TMSMap {
 		render.setMapContent(mapContent);
 		render.paint(graphics, mapContent.getViewport().getScreenArea(), mapContent.getViewport().getBounds());
 
+		graphics.dispose();
+
 		ImageIO.write(image, format.formatName, outputStream);
 
 		return mapContent;
 	}
+
+	public Viewport getViewport() { return this.viewport; }
 
 	public void setViewport(Viewport viewport) {
 		this.viewport = viewport;
