@@ -5,6 +5,11 @@ apply plugin: 'eclipse'
 repositories {
 
     maven {
+        name "lemaf"
+        url "http://repo.ti.lemaf.ufla.br/repository/public"
+    }
+    
+    maven {
         name "osgeo"
         url "http://download.osgeo.org/webdav/geotools/"
     }
@@ -63,7 +68,7 @@ publishing {
 
             groupId "br.ufla"
             artifactId "tmsmap"
-            version "1.0.1"
+            version "1.1.0"
 
             from components.java
 
