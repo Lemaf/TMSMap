@@ -182,6 +182,8 @@ public class ScaleBar<T extends ScaleBar<?>> {
 
 			simple.draw(graphics, null, mapViewport);
 
+			graphics.dispose();
+
 			this.label = simple.label;
 
 			return image.getSubimage(simple.bx, simple.by, simple.bw, simple.bh);
