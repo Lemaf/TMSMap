@@ -115,6 +115,7 @@ public class ScaleBar<T extends ScaleBar<?>> {
 		private final Font font;
 		private final Color fontColor;
 		private final Color lightColor;
+		private String label;
 
 		public Simple(SimpleStyle style) {
 			this.font = style.font;
@@ -143,6 +144,10 @@ public class ScaleBar<T extends ScaleBar<?>> {
 
 		public static Simple from(Font font, Color fontColor, Color backgroundColor) {
 			return new Simple(new SimpleStyle().font(font).fontColor(fontColor).background(backgroundColor));
+		}
+
+		public String getLabel() {
+			return label;
 		}
 
 		@Override
@@ -177,13 +182,16 @@ public class ScaleBar<T extends ScaleBar<?>> {
 
 			simple.draw(graphics, null, mapViewport);
 
+			this.label = simple.label;
+
 			return image.getSubimage(simple.bx, simple.by, simple.bw, simple.bh);
 		}
 
 		private class MapSimple extends DirectLayer {
 			private final int zoom;
 			private final ReferencedEnvelope bounds;
-			public int bx, by, bh, bw;
+			private int bx, by, bh, bw;
+			private String label;
 
 			public MapSimple(int zoom, ReferencedEnvelope bounds) {
 				this.zoom = zoom;
@@ -210,7 +218,7 @@ public class ScaleBar<T extends ScaleBar<?>> {
 						break;
 				}
 
-				String label = SCALES_LABELS[i];
+				label = SCALES_LABELS[i];
 
 				FontMetrics fontMetrics = graphics.getFontMetrics(font);
 				int labelWidth = fontMetrics.stringWidth(label);
