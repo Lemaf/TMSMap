@@ -10,8 +10,11 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.testng.annotations.Test;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -100,6 +103,45 @@ public class JTSTest {
 			map.render(ws[i], hs[i], out);
 			assertThat(out).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
 		}
+
+	}
+
+	@Test
+	public void scaleImageTest() throws ParseException, IOException {
+
+		TMSMap map = new TMSMap();
+
+		Geometry geom = geomOf(POLY_01);
+
+		PolygonStyle style = new PolygonStyle();
+		style.fillOpacity(1)
+			.fillColor(new Color(0x00, 0xff, 0xff))
+			.color(new Color(0xff, 0x00, 0x00))
+			.width(4);
+
+		ScaleBar.Simple simpleScale = ScaleBar.Simple.from(ScaleBar.Simple.style().font(new Font(Font.SANS_SERIF, Font.BOLD, 16)).fontColor(new Color(0xff, 0xff, 0x00))).bottom(10).right(15).height(16);
+
+		map.addLayer(getTmsLayer());
+		map.addLayer(simpleScale);
+		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, style, geom));
+
+		map.setViewport(VIEWPORT);
+
+		int[] ws = {1000, 500, 1000}, hs = {1000, 1000, 500};
+
+		for (int i = 0; i < ws.length; i++) {
+			File out = File.createTempFile(String.format("TMS-JTS-%dx%d-", ws[i], hs[i]), ".png");
+			map.render(ws[i], hs[i], out);
+
+			BufferedImage imageResult = simpleScale.render(map.getViewport(), ws[i], hs[i], map.getZoom());
+
+			File fscale = File.createTempFile(String.format("TMS-JTS-SCALE-%dx%d-", ws[i], hs[i]), ".png");
+			FileOutputStream outputStream = new FileOutputStream(fscale);
+			ImageIO.write(imageResult, "png", outputStream);
+
+			assertThat(out).exists().canRead().has(FileHelper.HAS_SOME_CONTENT);
+		}
+
 
 	}
 

@@ -253,6 +253,8 @@ public class TMSMap {
 		return mapContent;
 	}
 
+	public Viewport getViewport() { return this.viewport; }
+
 	public void setViewport(Viewport viewport) {
 		this.viewport = viewport;
 	}
