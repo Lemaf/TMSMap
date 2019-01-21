@@ -1,6 +1,7 @@
 package br.ufla.tmsmap.test;
 
 import br.ufla.tmsmap.*;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
@@ -44,12 +45,25 @@ public class LabelLayerTest {
 			.color(new Color(0xff, 0x00, 0x00))
 			.width(1);
 
-		Font font = new Font(Font.MONOSPACED, Font.BOLD, 10);
-		Color color = new Color(0xFFFFFF);
+		PolygonStyle styleCenter = new PolygonStyle();
+		styleCenter.fillOpacity(1f)
+			.fillColor(new Color(0xff, 0x00, 0x00))
+			.color(new Color(0xff, 0x00, 0x00))
+			.width(1);
+
+		Font font = new Font(Font.MONOSPACED, Font.BOLD, 16);
+		Color color = new Color(0xffff00);
+
+		Coordinate coordinate = geom.getEnvelopeInternal().centre();
 
 		map.addLayer(getTmsLayer());
 		map.addLayer(ScaleBar.Simple.from(ScaleBar.Simple.style().font(new Font(Font.SANS_SERIF, Font.BOLD, 16)).fontColor(new Color(0xff, 0xff, 0x00))).bottom(10).right(15).height(16));
-		map.addLayer(new LabelLayer("Label test", geom.getEnvelopeInternal().centre(), font, color));
+		map.addLayer(new LabelLayer("Many people believe that Vincent van Gogh painted his best works" +
+			"during the two-year period he spent in Provence. Here is where he" +
+			"painted The Starry Night--which some consider to be his greatest" +
+			"work of all. However, as his artistic brilliance reached new" +
+			"heights in Provence, his physical and mental health plummeted.", coordinate, LabelLayer.Alignment.CENTER, font, color));
+		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, styleCenter, geom.getCentroid().buffer(0.0005)));
 		map.addLayer(JTSLayer.from(DefaultGeographicCRS.WGS84, style, geom));
 
 		map.setViewport(VIEWPORT);
