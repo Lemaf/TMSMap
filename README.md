@@ -200,3 +200,36 @@ map.padding(200, 200);
 
 map.render(500, 500, new File("TMSMap-Example-06.png"));
 ```
+
+### JTS Geometries (with Symbolizer Fill)
+
+```java
+TMSMap map = new TMSMap();
+
+map.addLayer(TMSLayer.from(new File("layer/{z}/{x}/{y}.png"), false));
+
+// TMSMap needs a CRS
+CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+
+Style polygonStyle = new PolygonStyle()
+		.setShapeSymbolFill("shape://backslash", new Color(0xFF4921), 8, null, 1, 0.6f, new float[]{5,10})
+		.color(new Color(255, 102, 0))
+		.opacity(0.9f);
+
+// JTS Geometries
+Geometry geometry1 = ...;
+Geometry geometry2 = ...;
+
+// JTSLayer.from is varying
+map.addLayer(JTSLayer.from(crs, polygonStyle, geometry1, geometry2));
+
+// Zoom to
+Envelope envelope = geometry1.getEnvelopeInternal();
+envelope.expandToInclude(geometry2.getEnvelopeInternal());
+
+map.zoom(envelope.getMinX(), envelope.getMaxX(), envelope.getMinY(), envelope.getMaxY(), 12);
+
+map.padding(200, 200);
+
+map.render(500, 500, new File("TMSMap-Example-06.png"));
+```
