@@ -123,6 +123,9 @@ public class LabelLayer implements Layer {
 
 			float maxX = x + (textwidth/2);
 
+			if(maxX < 0)
+				maxX = 0;
+
 			// Set break width to width of Component.
 			float drawPosY = y;
 
